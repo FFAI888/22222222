@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DApp 主页 v0.26</title>
+<title>DApp 主页 v0.27</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -30,10 +30,52 @@
         font-weight: bold;
         color: #4CAF50;
     }
+
+    /* 个人中心样式 */
+    .profile-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 15px;
+    }
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: #ddd url('https://img.icons8.com/fluency/96/000000/user-male-circle.png') no-repeat center;
+        background-size: cover;
+        margin-bottom: 10px;
+        border: 2px solid #aaa;
+    }
     .profile-info {
-        margin-top: 10px;
         font-size: 14px;
         color: #555;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    .profile-buttons {
+        display: flex;
+        gap: 10px;
+    }
+    .profile-buttons button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s, transform 0.2s;
+    }
+    .profile-buttons button:first-child {
+        background-color: #4CAF50;
+        color: white;
+    }
+    .profile-buttons button:last-child {
+        background-color: #f44336;
+        color: white;
+    }
+    .profile-buttons button:hover {
+        transform: scale(1.05);
+        opacity: 0.9;
     }
 
     /* 底部导航栏 */
@@ -210,11 +252,19 @@
     swapBtn.addEventListener('click', (e) => { setActive(swapBtn); updateContent("这里是兑换页面（占位）"); addRippleEffect(e); });
     profileBtn.addEventListener('click', (e) => { 
         setActive(profileBtn); 
-        const profileHtml = `<div class="profile-info">
-            钱包余额: 0.0 ETH<br>
-            钱包状态: ${account ? '已连接' : '未连接'}<br>
-            用户名: 占位用户
-        </div>`;
+        const profileHtml = `
+            <div class="profile-container">
+                <div class="profile-avatar"></div>
+                <div class="profile-info">
+                    用户名: 占位用户<br>
+                    钱包状态: ${account ? '已连接' : '未连接'}<br>
+                    钱包余额: 0.0 ETH
+                </div>
+                <div class="profile-buttons">
+                    <button onclick="alert('修改资料功能开发中')">修改资料</button>
+                    <button onclick="alert('退出登录功能开发中')">退出登录</button>
+                </div>
+            </div>`;
         updateContent("个人中心", profileHtml); 
         addRippleEffect(e); 
     });
