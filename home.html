@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DApp 主页 v0.14</title>
+<title>DApp 主页 v0.16</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -33,9 +33,11 @@
     .bottom-nav {
         display: flex;
         justify-content: space-around;
-        background-color: #fff;
-        border-top: 1px solid #ccc;
-        height: 70px; /* 导航栏高度 */
+        background: linear-gradient(180deg, #ffffffcc, #f9f9f9cc); /* 浅色渐变 */
+        backdrop-filter: blur(10px); /* 半透明模糊效果 */
+        border-top: 1px solid #ddd;
+        height: 70px;
+        position: relative;
     }
     .bottom-nav button {
         flex: 1;
@@ -45,11 +47,13 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center; /* 垂直居中 */
+        justify-content: center;
         font-size: 16px;
         color: #888;
         border-radius: 12px;
-        transition: transform 0.2s, color 0.3s, background 0.5s;
+        transition: transform 0.2s, color 0.3s, background 0.5s, box-shadow 0.3s;
+        overflow: hidden;
+        position: relative;
     }
     .bottom-nav button img {
         width: 28px;
@@ -62,6 +66,7 @@
         color: #fff;
         background: linear-gradient(135deg, #4CAF50, #81C784);
         animation: gradientMove 3s linear infinite;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
     .bottom-nav button.active img {
         filter: grayscale(0%) brightness(1.2);
@@ -69,9 +74,26 @@
     }
     .bottom-nav button:hover {
         transform: scale(1.05);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
     .bottom-nav button:active {
         transform: scale(1.15);
+    }
+
+    /* 波纹效果 */
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        transform: scale(0);
+        animation: ripple 0.6s linear;
+        background-color: rgba(255, 255, 255, 0.6);
+        pointer-events: none;
+    }
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
     }
 
     @keyframes gradientMove {
@@ -121,9 +143,10 @@
     const earnBtn = document.getElementById('earnBtn');
     const swapBtn = document.getElementById('swapBtn');
     const contentDiv = document.querySelector('.content');
+    const buttons = [homeBtn, groupBtn, earnBtn, swapBtn];
 
     function setActive(button){
-        [homeBtn, groupBtn, earnBtn, swapBtn].forEach(btn => btn.classList.remove('active'));
+        buttons.forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
     }
 
@@ -131,10 +154,20 @@
         contentDiv.innerHTML = `<h2>${title}</h2><div class="wallet-address">${account ? "已连接钱包: " + account : "未获取到钱包地址"}</div>`;
     }
 
-    homeBtn.addEventListener('click', () => { setActive(homeBtn); updateContent("欢迎来到 DApp 主页！"); });
-    groupBtn.addEventListener('click', () => { setActive(groupBtn); updateContent("这里是拼团页面（占位）"); });
-    earnBtn.addEventListener('click', () => { setActive(earnBtn); updateContent("这里是赚币页面（占位）"); });
-    swapBtn.addEventListener('click', () => { setActive(swapBtn); updateContent("这里是兑换页面（占位）"); });
+    function addRippleEffect(e){
+        const ripple = document.createElement("span");
+        ripple.classList.add("ripple");
+        const rect = e.target.getBoundingClientRect();
+        ripple.style.left = `${e.clientX - rect.left}px`;
+        ripple.style.top = `${e.clientY - rect.top}px`;
+        e.target.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+    }
+
+    homeBtn.addEventListener('click', (e) => { setActive(homeBtn); updateContent("欢迎来到 DApp 主页！"); addRippleEffect(e); });
+    groupBtn.addEventListener('click', (e) => { setActive(groupBtn); updateContent("这里是拼团页面（占位）"); addRippleEffect(e); });
+    earnBtn.addEventListener('click', (e) => { setActive(earnBtn); updateContent("这里是赚币页面（占位）"); addRippleEffect(e); });
+    swapBtn.addEventListener('click', (e) => { setActive(swapBtn); updateContent("这里是兑换页面（占位）"); addRippleEffect(e); });
 </script>
 
 </body>
