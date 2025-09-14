@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DApp 主页 v0.04</title>
+    <title>DApp 主页 v0.08</title>
+    <!-- Font Awesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-o8Cn0d/O7/9/9+p3X6kZHQwO0k0zM6j4U7d/7q9kCGRP6e6Q8xZgqfF9U6EcgGZ8bX9U+2w2ZbFXjJLoQw3l6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,12 +22,13 @@
             justify-content: center;
             align-items: center;
             text-align: center;
+            padding: 20px;
         }
         .content h2 {
             color: #333;
+            margin-bottom: 10px;
         }
         .wallet-address {
-            margin-top: 10px;
             font-weight: bold;
             color: #4CAF50;
         }
@@ -34,18 +37,33 @@
             justify-content: space-around;
             background-color: #fff;
             border-top: 1px solid #ccc;
-            padding: 10px 0;
+            padding: 5px 0;
         }
         .bottom-nav button {
             flex: 1;
             background: none;
             border: none;
-            font-size: 16px;
+            font-size: 12px;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #555;
+            padding: 5px 0;
+            transition: transform 0.2s, color 0.3s;
         }
         .bottom-nav button.active {
-            color: #4CAF50;
-            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            border-radius: 10px;
+            padding: 8px 0;
+        }
+        .bottom-nav button:active {
+            transform: scale(1.15);
+        }
+        .bottom-nav i {
+            font-size: 20px;
+            margin-bottom: 2px;
         }
     </style>
 </head>
@@ -54,56 +72,39 @@
         <h2>欢迎来到 DApp 主页！</h2>
         <div class="wallet-address" id="walletAddress">加载钱包地址...</div>
     </div>
+
     <div class="bottom-nav">
-        <button id="homeBtn" class="active">首页</button>
-        <button id="groupBtn">拼团</button>
-        <button id="earnBtn">赚币</button>
-        <button id="tradeBtn">交易</button>
+        <button id="homeBtn" class="active"><i class="fas fa-home"></i>首页</button>
+        <button id="groupBtn"><i class="fas fa-users"></i>拼团</button>
+        <button id="earnBtn"><i class="fas fa-coins"></i>赚币</button>
+        <button id="swapBtn"><i class="fas fa-exchange-alt"></i>兑换</button>
     </div>
 
     <script>
-        // 获取 URL 参数中的钱包地址
         const urlParams = new URLSearchParams(window.location.search);
         const account = urlParams.get('account');
         const walletAddressDiv = document.getElementById('walletAddress');
+        walletAddressDiv.innerText = account ? "已连接钱包: " + account : "未获取到钱包地址";
 
-        if(account){
-            walletAddressDiv.innerText = "已连接钱包: " + account;
-        } else {
-            walletAddressDiv.innerText = "未获取到钱包地址";
-        }
-
-        // 底部导航栏功能
         const homeBtn = document.getElementById('homeBtn');
         const groupBtn = document.getElementById('groupBtn');
         const earnBtn = document.getElementById('earnBtn');
-        const tradeBtn = document.getElementById('tradeBtn');
+        const swapBtn = document.getElementById('swapBtn');
         const contentDiv = document.querySelector('.content');
 
         function setActive(button){
-            [homeBtn, groupBtn, earnBtn, tradeBtn].forEach(btn => btn.classList.remove('active'));
+            [homeBtn, groupBtn, earnBtn, swapBtn].forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
         }
 
-        homeBtn.addEventListener('click', () => {
-            setActive(homeBtn);
-            contentDiv.innerHTML = `<h2>欢迎来到 DApp 主页！</h2><div class="wallet-address">${account ? "已连接钱包: " + account : "未获取到钱包地址"}</div>`;
-        });
+        function updateContent(title){
+            contentDiv.innerHTML = `<h2>${title}</h2><div class="wallet-address">${account ? "已连接钱包: " + account : "未获取到钱包地址"}</div>`;
+        }
 
-        groupBtn.addEventListener('click', () => {
-            setActive(groupBtn);
-            contentDiv.innerHTML = `<h2>这里是拼团页面（占位）</h2><div class="wallet-address">${account ? "已连接钱包: " + account : "未获取到钱包地址"}</div>`;
-        });
-
-        earnBtn.addEventListener('click', () => {
-            setActive(earnBtn);
-            contentDiv.innerHTML = `<h2>这里是赚币页面（占位）</h2><div class="wallet-address">${account ? "已连接钱包: " + account : "未获取到钱包地址"}</div>`;
-        });
-
-        tradeBtn.addEventListener('click', () => {
-            setActive(tradeBtn);
-            contentDiv.innerHTML = `<h2>这里是交易页面（占位）</h2><div class="wallet-address">${account ? "已连接钱包: " + account : "未获取到钱包地址"}</div>`;
-        });
+        homeBtn.addEventListener('click', () => { setActive(homeBtn); updateContent("欢迎来到 DApp 主页！"); });
+        groupBtn.addEventListener('click', () => { setActive(groupBtn); updateContent("这里是拼团页面（占位）"); });
+        earnBtn.addEventListener('click', () => { setActive(earnBtn); updateContent("这里是赚币页面（占位）"); });
+        swapBtn.addEventListener('click', () => { setActive(swapBtn); updateContent("这里是兑换页面（占位）"); });
     </script>
 </body>
 </html>
