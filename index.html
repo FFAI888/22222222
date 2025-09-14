@@ -3,48 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>移动端DApp钱包登录 v0.02</title>
+    <title>DApp跨钱包登录 v0.03</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
-        button { padding: 10px 20px; font-size: 16px; }
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        button { padding: 10px 20px; font-size: 16px; margin: 5px; }
         #walletAddress { margin-top: 20px; word-break: break-all; }
     </style>
 </head>
 <body>
     <h1>DApp 钱包登录</h1>
-    <button id="connectWalletBtn">连接钱包</button>
+    <button id="connectMetaMaskBtn">连接 MetaMask</button>
+    <button id="connectWalletConnectBtn">使用 WalletConnect</button>
     <p id="walletAddress">钱包未连接</p>
 
-    <script>
-        const connectWalletBtn = document.getElementById('connectWalletBtn');
-        const walletAddress = document.getElementById('walletAddress');
+    <!-- 引入 WalletConnect -->
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
 
-        async function connectWallet() {
+    <script>
+        const walletAddress = document.getElementById('walletAddress');
+        const connectMetaMaskBtn = document.getElementById('connectMetaMaskBtn');
+        const connectWalletConnectBtn = document.getElementById('connectWalletConnectBtn');
+
+        // --- MetaMask 连接 ---
+        async function connectMetaMask() {
             if (typeof window.ethereum !== 'undefined') {
                 try {
-                    connectWalletBtn.innerText = '连接中...';
+                    connectMetaMaskBtn.innerText = '连接中...';
                     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     walletAddress.innerText = '已连接钱包地址: ' + accounts[0];
-                    connectWalletBtn.innerText = '钱包已连接';
-                    connectWalletBtn.disabled = true; // 已连接禁用按钮
+                    connectMetaMaskBtn.innerText = '钱包已连接';
+                    connectMetaMaskBtn.disabled = true;
                 } catch (err) {
                     console.error(err);
-                    walletAddress.innerText = '连接失败，请重试';
-                    connectWalletBtn.innerText = '连接钱包';
+                    walletAddress.innerText = 'MetaMask连接失败';
+                    connectMetaMaskBtn.innerText = '连接 MetaMask';
                 }
             } else {
-                walletAddress.innerHTML = '未检测到钱包，请安装 MetaMask 或使用 WalletConnect';
+                walletAddress.innerText = '未检测到 MetaMask，请安装钱包';
             }
         }
 
-        connectWalletBtn.addEventListener('click', connectWallet);
+        connectMetaMaskBtn.addEventListener('click', connectMetaMask);
 
-        // 如果页面在 App 内浏览器，可以直接提示
-        window.addEventListener('load', () => {
-            if (/mobile/i.test(navigator.userAgent)) {
-                console.log('移动端或App内浏览器访问');
+        // --- WalletConnect 连接 ---
+        async function connectWalletConnect() {
+            try {
+                connectWalletConnectBtn.innerText = '连接中...';
+
+                const provider = new WalletConnectProvider.default({
+                    infuraId: "1c83e5c1f41e4c1fb07ff9c9c7b74e7b" // 你可以注册自己的 Infura Key
+                });
+
+                await provider.enable();
+
+                const web3 = new Web3(provider);
+                const accounts = await web3.eth.getAccounts();
+                walletAddress.innerText = '已连接钱包地址: ' + accounts[0];
+                connectWalletConnectBtn.innerText = '钱包已连接';
+                connectWalletConnectBtn.disabled = true;
+
+                // 监听断开事件
+                provider.on("disconnect", (code, reason) => {
+                    walletAddress.innerText = '钱包未连接';
+                    connectWalletConnectBtn.innerText = '使用 WalletConnect';
+                    connectWalletConnectBtn.disabled = false;
+                });
+
+            } catch (err) {
+                console.error(err);
+                walletAddress.innerText = 'WalletConnect 连接失败';
+                connectWalletConnectBtn.innerText = '使用 WalletConnect';
             }
-        });
+        }
+
+        connectWalletConnectBtn.addEventListener('click', connectWalletConnect);
     </script>
 </body>
 </html>
