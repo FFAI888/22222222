@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DApp 主页 v0.33</title>
+<title>DApp 主页 v0.34</title>
 <style>
 :root{
     --topbar-height:56px;
@@ -28,14 +28,15 @@ body{
 .logo-bg{
     width:44px;height:44px;
     background:#e6f0ff;
-    border-radius:8px;
+    border-radius:12px;
     display:flex;justify-content:center;align-items:center;
+    overflow:hidden;
 }
 .logo-img{
-    width:36px;height:36px;border-radius:6px;object-fit:cover;
+    width:100%;height:100%;object-fit:cover;border-radius:12px;
 }
 .title-wrap{
-    display:flex;flex-direction:column;justify-content:center;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
 }
 .app-title{font-size:18px;font-weight:600;color:#222;margin:0;letter-spacing:5px;}
 .logo-subtext{font-size:12px;color:#666;margin:0;}
@@ -173,7 +174,7 @@ profileBtn.addEventListener('click',e=>{
 
 document.addEventListener('DOMContentLoaded',()=>{setActive(homeBtn);updateContent('欢迎来到 DApp 主页！');});
 
-/* Logo 上传 + localStorage 保存 */
+/* Logo 上传 + localStorage + 自动缩放圆角 */
 const logoInput=document.getElementById('logoInput');
 const logoImg=document.getElementById('logoImg');
 try{
