@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DApp 主页 v0.23</title>
+<title>DApp 主页 v0.24</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -29,6 +29,11 @@
     .wallet-address {
         font-weight: bold;
         color: #4CAF50;
+    }
+    .profile-info {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #555;
     }
 
     /* 底部导航栏 */
@@ -128,7 +133,7 @@
 </head>
 <body>
 
-<div class="content">
+<div class="content" id="mainContent">
     <h2>欢迎来到 DApp 主页！</h2>
     <div class="wallet-address" id="walletAddress">加载钱包地址...</div>
 </div>
@@ -162,13 +167,13 @@
     const walletAddressDiv = document.getElementById('walletAddress');
     walletAddressDiv.innerText = account ? "已连接钱包: " + account : "未获取到钱包地址";
 
+    const mainContent = document.getElementById('mainContent');
     const bottomNav = document.getElementById('bottomNav');
     const homeBtn = document.getElementById('homeBtn');
     const groupBtn = document.getElementById('groupBtn');
     const earnBtn = document.getElementById('earnBtn');
     const swapBtn = document.getElementById('swapBtn');
     const profileBtn = document.getElementById('profileBtn');
-    const contentDiv = document.querySelector('.content');
     const buttons = [homeBtn, groupBtn, earnBtn, swapBtn, profileBtn];
 
     const navGradients = {
@@ -185,8 +190,8 @@
         bottomNav.style.background = navGradients[button.id] || navGradients.homeBtn;
     }
 
-    function updateContent(title){
-        contentDiv.innerHTML = `<h2>${title}</h2><div class="wallet-address">${account ? "已连接钱包: " + account : "未获取到钱包地址"}</div>`;
+    function updateContent(title, extraHtml=''){
+        mainContent.innerHTML = `<h2>${title}</h2><div class="wallet-address">${account ? "已连接钱包: " + account : "未获取到钱包地址"}</div>${extraHtml}`;
     }
 
     function addRippleEffect(e){
@@ -203,7 +208,16 @@
     groupBtn.addEventListener('click', (e) => { setActive(groupBtn); updateContent("这里是拼团页面（占位）"); addRippleEffect(e); });
     earnBtn.addEventListener('click', (e) => { setActive(earnBtn); updateContent("这里是赚币页面（占位）"); addRippleEffect(e); });
     swapBtn.addEventListener('click', (e) => { setActive(swapBtn); updateContent("这里是兑换页面（占位）"); addRippleEffect(e); });
-    profileBtn.addEventListener('click', (e) => { setActive(profileBtn); updateContent("这里是我的页面（占位）"); addRippleEffect(e); });
+    profileBtn.addEventListener('click', (e) => { 
+        setActive(profileBtn); 
+        const profileHtml = `<div class="profile-info">
+            钱包余额: 0.0 ETH<br>
+            钱包状态: ${account ? '已连接' : '未连接'}<br>
+            用户名: 占位用户
+        </div>`;
+        updateContent("个人中心", profileHtml); 
+        addRippleEffect(e); 
+    });
 </script>
 
 </body>
