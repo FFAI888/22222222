@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DApp 主页 v0.20</title>
+<title>DApp 主页 v0.21</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -35,12 +35,12 @@
     .bottom-nav {
         display: flex;
         justify-content: space-around;
-        background: linear-gradient(180deg, #e0e0e0cc, #d0e6f5cc);
+        background: linear-gradient(270deg, #e0e0e0cc, #d0e6f5cc, #e0e0e0cc); /* 整体渐变流动 */
         backdrop-filter: blur(10px);
         border-top: 1px solid #ccc;
         height: 70px;
         position: relative;
-        transition: background 0.5s ease;
+        animation: navGradientFlow 8s ease-in-out infinite;
     }
 
     .bottom-nav button {
@@ -68,12 +68,12 @@
         filter: grayscale(100%);
     }
 
-    /* 激活按钮渐变 + 微动 + 缩放 */
+    /* 激活按钮微动 + 缩放 + 背景渐变 */
     .bottom-nav button.active {
         color: #fff;
         background: linear-gradient(135deg, #4CAF50, #81C784);
         animation: gradientMove 3s linear infinite, activeFloatScale 2s ease-in-out infinite;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
 
     .bottom-nav button.active img {
@@ -103,17 +103,24 @@
         to { transform: scale(4); opacity: 0; }
     }
 
-    /* 渐变流动 */
+    /* 激活按钮微动 + 缩放 */
+    @keyframes activeFloatScale {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-3px) scale(1.05); }
+    }
+
+    /* 激活按钮渐变流动 */
     @keyframes gradientMove {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
 
-    /* 微动 + 缩放组合 */
-    @keyframes activeFloatScale {
-        0%, 100% { transform: translateY(0) scale(1); }
-        50% { transform: translateY(-3px) scale(1.05); }
+    /* 整体导航栏背景渐变流动 */
+    @keyframes navGradientFlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
 
     .bottom-nav button.active {
@@ -162,10 +169,10 @@
     const buttons = [homeBtn, groupBtn, earnBtn, swapBtn];
 
     const navGradients = {
-        homeBtn: 'linear-gradient(180deg, #e0e0e0cc, #d0e6f5cc)',
-        groupBtn: 'linear-gradient(180deg, #ffe6cc, #ffd9b3)',
-        earnBtn: 'linear-gradient(180deg, #e6f5cc, #d9f5b3)',
-        swapBtn: 'linear-gradient(180deg, #cce0ff, #b3d9ff)'
+        homeBtn: 'linear-gradient(270deg, #e0e0e0cc, #d0e6f5cc, #e0e0e0cc)',
+        groupBtn: 'linear-gradient(270deg, #ffe6cc, #ffd9b3, #ffe6cc)',
+        earnBtn: 'linear-gradient(270deg, #e6f5cc, #d9f5b3, #e6f5cc)',
+        swapBtn: 'linear-gradient(270deg, #cce0ff, #b3d9ff, #cce0ff)'
     };
 
     function setActive(button){
