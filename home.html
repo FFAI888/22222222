@@ -1,284 +1,383 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DApp 主页 v0.29</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DApp 主页 v0.30</title>
 <style>
+    /* ---------------- 基本布局 ---------------- */
+    :root{
+        --topbar-height: 56px; /* 顶部高度，留出空间 */
+        --nav-height: 70px;
+    }
+    html,body{
+        height:100%;
+        margin:0;
+        padding:0;
+    }
     body {
         font-family: Arial, sans-serif;
-        margin: 0;
         display: flex;
         flex-direction: column;
         height: 100vh;
         background-color: #f0f2f5;
-        transition: background-color 0.6s ease, color 0.4s ease; /* 增加平滑过渡 */
+        transition: background-color 0.6s ease, color 0.4s ease;
+    }
+
+    /* ---------------- 顶部条（logo + 标题）---------------- */
+    .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--topbar-height);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 14px;
+        background: rgba(255,255,255,0.6);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid rgba(0,0,0,0.06);
+        z-index: 30;
+    }
+    .logo-wrap {
+        display:flex;
+        align-items:center;
+        gap:10px;
+        cursor: pointer;
+    }
+    .logo-img {
+        width:40px;
+        height:40px;
+        border-radius:8px;
+        object-fit:cover;
+        border:1px solid rgba(0,0,0,0.08);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .app-title {
+        font-size:18px;
+        font-weight:600;
+        color:#222;
+        user-select: none;
+    }
+    .logo-subtext{
+        font-size:12px;
+        color:#666;
+        margin-left:6px;
+    }
+
+    /* 隐藏的文件输入（点击 logo 时触发） */
+    #logoInput {
+        display:none;
+    }
+
+    /* ---------------- 主内容（向下推开顶部） ---------------- */
+    .main-wrap {
+        flex:1;
+        display:flex;
+        flex-direction:column;
+        padding-top: calc(var(--topbar-height) + 10px); /* 顶部留空 */
+        padding-bottom: calc(var(--nav-height) + 10px); /* 底部留空 */
+        box-sizing: border-box;
     }
     .content {
         flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        text-align:center;
         padding: 20px;
     }
     .content h2 {
         color: #333;
-        margin-bottom: 10px;
+        margin:0 0 10px 0;
         transition: color 0.4s ease;
     }
     .wallet-address {
-        font-weight: bold;
-        color: #4CAF50;
+        font-weight:bold;
+        color:#4CAF50;
     }
 
     /* 个人中心样式 */
-    .profile-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-top: 15px;
+    .profile-container{
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        margin-top:15px;
     }
-    .profile-avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: #ddd url('https://img.icons8.com/fluency/96/000000/user-male-circle.png') no-repeat center;
-        background-size: cover;
-        margin-bottom: 10px;
-        border: 2px solid #aaa;
+    .profile-avatar{
+        width:80px;
+        height:80px;
+        border-radius:50%;
+        background:#ddd url('https://img.icons8.com/fluency/96/000000/user-male-circle.png') no-repeat center;
+        background-size:cover;
+        margin-bottom:10px;
+        border:2px solid #aaa;
     }
-    .profile-info {
-        font-size: 14px;
-        color: #555;
-        margin-bottom: 15px;
-        text-align: center;
+    .profile-info{
+        font-size:14px;
+        color:#555;
+        margin-bottom:15px;
+        text-align:center;
     }
-    .profile-buttons {
-        display: flex;
-        gap: 10px;
+    .profile-buttons{
+        display:flex;
+        gap:10px;
     }
-    .profile-buttons button {
-        padding: 8px 16px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: background 0.3s, transform 0.2s;
+    .profile-buttons button{
+        padding:8px 16px;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+        font-size:14px;
+        transition:background 0.3s, transform 0.2s;
     }
-    .profile-buttons button:first-child {
-        background-color: #4CAF50;
-        color: white;
-    }
-    .profile-buttons button:last-child {
-        background-color: #f44336;
-        color: white;
-    }
-    .profile-buttons button:hover {
-        transform: scale(1.05);
-        opacity: 0.9;
-    }
+    .profile-buttons button:first-child{ background:#4CAF50; color:#fff; }
+    .profile-buttons button:last-child{ background:#f44336; color:#fff; }
+    .profile-buttons button:hover{ transform:scale(1.03); }
 
-    /* 底部导航栏 */
+    /* ---------------- 底部导航 ---------------- */
     .bottom-nav {
-        display: flex;
-        justify-content: space-around;
+        display:flex;
+        justify-content:space-around;
         background: linear-gradient(270deg, #e0e0e0cc, #d0e6f5cc, #e0e0e0cc);
         backdrop-filter: blur(10px);
         border-top: 1px solid #ccc;
-        height: 70px;
-        position: relative;
+        height: var(--nav-height);
+        position: fixed;
+        left:0;
+        right:0;
+        bottom:0;
+        z-index:20;
         animation: navGradientFlow 10s ease-in-out infinite;
     }
 
-    .bottom-nav button {
-        flex: 1;
-        background: none;
-        border: none;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-        color: #555;
-        border-radius: 12px;
+    .bottom-nav button{
+        flex:1;
+        background:none;
+        border:none;
+        cursor:pointer;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        font-size:16px;
+        color:#555;
+        border-radius:12px;
         transition: transform 0.2s, color 0.3s, box-shadow 0.3s;
-        overflow: hidden;
-        position: relative;
+        overflow:hidden;
+        position:relative;
+        padding:6px 4px;
     }
-
-    .bottom-nav button img {
-        width: 28px;
-        height: 28px;
-        margin-bottom: 2px;
-        transition: filter 0.3s, transform 0.3s;
-        filter: grayscale(100%);
+    .bottom-nav button img{
+        width:28px;height:28px;margin-bottom:4px;
+        transition:filter .3s, transform .3s;
+        filter:grayscale(100%);
     }
-
-    /* 激活按钮微动 + 缩放 + 渐变循环 */
-    .bottom-nav button.active {
-        color: #fff;
-        background: linear-gradient(135deg, #4CAF50, #81C784, #A5D6A7, #4CAF50);
+    .bottom-nav button.active{
+        color:#fff;
+        background: linear-gradient(135deg,#4CAF50,#81C784,#A5D6A7,#4CAF50);
         animation: gradientMoveButton 5s linear infinite, activeFloatScale 2s ease-in-out infinite;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-        background-size: 300% 300%;
+        box-shadow:0 4px 12px rgba(0,0,0,0.25);
+        background-size:300% 300%;
     }
+    .bottom-nav button.active img{ filter:grayscale(0%) brightness(1.2); transform:scale(1.15); }
+    .bottom-nav button:hover{ transform:scale(1.05); box-shadow:0 2px 6px rgba(0,0,0,0.15); }
+    .bottom-nav button:active{ transform:scale(1.2); transition: transform .15s ease-out; }
 
-    .bottom-nav button.active img {
-        filter: grayscale(0%) brightness(1.2);
-        transform: scale(1.15);
-    }
+    /* 波纹效果 */
+    .ripple{ position:absolute;border-radius:50%;transform:scale(0);animation:ripple .6s linear;background-color:rgba(255,255,255,0.6);pointer-events:none;}
+    @keyframes ripple{ to{ transform:scale(4); opacity:0; } }
+    @keyframes activeFloatScale{ 0%,100%{ transform:translateY(0) scale(1); } 50%{ transform:translateY(-3px) scale(1.05); } }
+    @keyframes gradientMoveButton{ 0%{ background-position:0% 50%; } 50%{ background-position:100% 50%; } 100%{ background-position:0% 50%; } }
+    @keyframes navGradientFlow{ 0%{ background-position:0% 50%; } 50%{ background-position:100% 50%; } 100%{ background-position:0% 50%; } }
 
-    .bottom-nav button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-
-    .bottom-nav button:active {
-        transform: scale(1.2);
-        transition: transform 0.15s ease-out;
-    }
-
-    /* 点击波纹 */
-    .ripple {
-        position: absolute;
-        border-radius: 50%;
-        transform: scale(0);
-        animation: ripple 0.6s linear;
-        background-color: rgba(255, 255, 255, 0.6);
-        pointer-events: none;
-    }
-    @keyframes ripple {
-        to { transform: scale(4); opacity: 0; }
-    }
-
-    /* 激活按钮微动 + 缩放 */
-    @keyframes activeFloatScale {
-        0%, 100% { transform: translateY(0) scale(1); }
-        50% { transform: translateY(-3px) scale(1.05); }
-    }
-
-    /* 激活按钮背景渐变循环 */
-    @keyframes gradientMoveButton {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-
-    /* 整体导航栏背景渐变流动 */
-    @keyframes navGradientFlow {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+    /* 响应式小屏微调 */
+    @media(max-width:420px){
+        .app-title{ font-size:16px; }
+        .topbar{ padding:0 10px; }
+        .logo-img{ width:36px; height:36px; }
+        .bottom-nav button img{ width:26px; height:26px; }
+        .content h2{ font-size:18px; }
     }
 </style>
 </head>
 <body>
 
-<div class="content" id="mainContent">
-    <h2>欢迎来到 DApp 主页！</h2>
-    <div class="wallet-address" id="walletAddress">加载钱包地址...</div>
-</div>
+    <!-- 顶部条：logo（可上传） + 融链 -->
+    <div class="topbar" role="banner">
+        <label class="logo-wrap" id="logoWrap" title="点击更换 logo">
+            <!-- 默认 logo（支持 localStorage 覆盖） -->
+            <img id="logoImg" class="logo-img" src="https://img.icons8.com/fluency/96/000000/blockchain.png" alt="logo">
+        </label>
 
-<div class="bottom-nav" id="bottomNav">
-    <button id="homeBtn" class="active">
-        <img src="https://img.icons8.com/fluency/48/000000/home.png" alt="首页">
-        首页
-    </button>
-    <button id="groupBtn">
-        <img src="https://img.icons8.com/fluency/48/000000/conference.png" alt="拼团">
-        拼团
-    </button>
-    <button id="earnBtn">
-        <img src="https://img.icons8.com/fluency/48/000000/coin-in-hand.png" alt="赚币">
-        赚币
-    </button>
-    <button id="swapBtn">
-        <img src="https://img.icons8.com/fluency/48/000000/exchange.png" alt="兑换">
-        兑换
-    </button>
-    <button id="profileBtn">
-        <img src="https://img.icons8.com/fluency/48/000000/user-male-circle.png" alt="我的">
-        我的
-    </button>
-</div>
+        <!-- 隐藏的文件输入：只允许图片 -->
+        <input id="logoInput" type="file" accept="image/*">
+
+        <div style="display:flex;flex-direction:column;justify-content:center;">
+            <div class="app-title">融链</div>
+            <div class="logo-subtext">DApp</div>
+        </div>
+    </div>
+
+    <!-- 主体容器（留出顶部和底部） -->
+    <div class="main-wrap">
+        <div class="content" id="mainContent">
+            <h2>欢迎来到 DApp 主页！</h2>
+            <div class="wallet-address" id="walletAddress">加载钱包地址...</div>
+        </div>
+    </div>
+
+    <!-- 底部导航（保留 v0.29 / v0.27 功能） -->
+    <div class="bottom-nav" id="bottomNav">
+        <button id="homeBtn" class="active">
+            <img src="https://img.icons8.com/fluency/48/000000/home.png" alt="首页">首页
+        </button>
+        <button id="groupBtn">
+            <img src="https://img.icons8.com/fluency/48/000000/conference.png" alt="拼团">拼团
+        </button>
+        <button id="earnBtn">
+            <img src="https://img.icons8.com/fluency/48/000000/coin-in-hand.png" alt="赚币">赚币
+        </button>
+        <button id="swapBtn">
+            <img src="https://img.icons8.com/fluency/48/000000/exchange.png" alt="兑换">兑换
+        </button>
+        <button id="profileBtn">
+            <img src="https://img.icons8.com/fluency/48/000000/user-male-circle.png" alt="我的">我的
+        </button>
+    </div>
 
 <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const account = urlParams.get('account');
-    const walletAddressDiv = document.getElementById('walletAddress');
-    walletAddressDiv.innerText = account ? "已连接钱包: " + account : "未获取到钱包地址";
+/* ====================== 初始化与 DOM 引用 ====================== */
+const urlParams = new URLSearchParams(window.location.search);
+const account = urlParams.get('account');
+const walletAddressDiv = document.getElementById('walletAddress');
+walletAddressDiv.innerText = account ? "已连接钱包: " + account : "未获取到钱包地址";
 
-    const mainContent = document.getElementById('mainContent');
-    const bottomNav = document.getElementById('bottomNav');
-    const homeBtn = document.getElementById('homeBtn');
-    const groupBtn = document.getElementById('groupBtn');
-    const earnBtn = document.getElementById('earnBtn');
-    const swapBtn = document.getElementById('swapBtn');
-    const profileBtn = document.getElementById('profileBtn');
-    const buttons = [homeBtn, groupBtn, earnBtn, swapBtn, profileBtn];
+const mainContent = document.getElementById('mainContent');
+const bottomNav = document.getElementById('bottomNav');
 
-    const navGradients = {
-        homeBtn: 'linear-gradient(270deg, #e0e0e0cc, #d0e6f5cc, #e0e0e0cc)',
-        groupBtn: 'linear-gradient(270deg, #ffe6cc, #ffd9b3, #ffe6cc)',
-        earnBtn: 'linear-gradient(270deg, #e6f5cc, #d9f5b3, #e6f5cc)',
-        swapBtn: 'linear-gradient(270deg, #cce0ff, #b3d9ff, #cce0ff)',
-        profileBtn: 'linear-gradient(270deg, #f0d6ff, #e0b3ff, #f0d6ff)'
+const homeBtn = document.getElementById('homeBtn');
+const groupBtn = document.getElementById('groupBtn');
+const earnBtn = document.getElementById('earnBtn');
+const swapBtn = document.getElementById('swapBtn');
+const profileBtn = document.getElementById('profileBtn');
+const buttons = [homeBtn, groupBtn, earnBtn, swapBtn, profileBtn];
+
+/* ============ 导航栏渐变 & 页面浅色背景（联动）=========== */
+const navGradients = {
+    homeBtn: 'linear-gradient(270deg, #e0e0e0cc, #d0e6f5cc, #e0e0e0cc)',
+    groupBtn: 'linear-gradient(270deg, #ffe6cc, #ffd9b3, #ffe6cc)',
+    earnBtn: 'linear-gradient(270deg, #e6f5cc, #d9f5b3, #e6f5cc)',
+    swapBtn: 'linear-gradient(270deg, #cce0ff, #b3d9ff, #cce0ff)',
+    profileBtn: 'linear-gradient(270deg, #f0d6ff, #e0b3ff, #f0d6ff)'
+};
+const pageBackgrounds = {
+    homeBtn: '#f5f7fa',
+    groupBtn: '#fff3e6',
+    earnBtn: '#f3ffe6',
+    swapBtn: '#e6f0ff',
+    profileBtn: '#faf0ff'
+};
+
+function setActive(button){
+    buttons.forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+    // 切换底部导航背景渐变
+    bottomNav.style.background = navGradients[button.id] || navGradients.homeBtn;
+    // 切换页面背景为对应浅色（带过渡）
+    document.body.style.backgroundColor = pageBackgrounds[button.id] || '#f0f2f5';
+}
+
+/* ============ 更新内容区域 ============ */
+function updateContent(title, extraHtml=''){
+    mainContent.innerHTML = `<h2>${title}</h2><div class="wallet-address">${account ? "已连接钱包: " + account : "未获取到钱包地址"}</div>${extraHtml}`;
+}
+
+/* ============ 波纹效果 ============ */
+function addRippleEffect(e){
+    const target = e.currentTarget;
+    const rect = target.getBoundingClientRect();
+
+    // 计算点击位置（相对于按钮）
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    target.appendChild(ripple);
+    setTimeout(()=> ripple.remove(), 600);
+}
+
+/* ============ 按钮事件绑定 ============ */
+homeBtn.addEventListener('click', (e)=>{ setActive(homeBtn); updateContent('欢迎来到 DApp 主页！'); addRippleEffect(e); });
+groupBtn.addEventListener('click', (e)=>{ setActive(groupBtn); updateContent('这里是拼团页面（占位）'); addRippleEffect(e); });
+earnBtn.addEventListener('click', (e)=>{ setActive(earnBtn); updateContent('这里是赚币页面（占位）'); addRippleEffect(e); });
+swapBtn.addEventListener('click', (e)=>{ setActive(swapBtn); updateContent('这里是兑换页面（占位）'); addRippleEffect(e); });
+profileBtn.addEventListener('click', (e)=>{
+    setActive(profileBtn);
+    const profileHtml = `
+        <div class="profile-container">
+            <div class="profile-avatar"></div>
+            <div class="profile-info">
+                用户名: 占位用户<br>
+                钱包状态: ${account ? '已连接' : '未连接'}<br>
+                钱包余额: 0.0 ETH
+            </div>
+            <div class="profile-buttons">
+                <button onclick="alert('修改资料功能开发中')">修改资料</button>
+                <button onclick="alert('退出登录功能开发中')">退出登录</button>
+            </div>
+        </div>`;
+    updateContent('个人中心', profileHtml);
+    addRippleEffect(e);
+});
+
+/* ====================== logo 上传相关 ====================== */
+const logoImg = document.getElementById('logoImg');
+const logoInput = document.getElementById('logoInput');
+const logoWrap = document.getElementById('logoWrap');
+
+// 加载 localStorage 中保存的自定义 logo（如果有）
+try{
+    const saved = localStorage.getItem('customLogoDataUrl');
+    if (saved){
+        logoImg.src = saved;
+    }
+}catch(e){
+    console.warn('localStorage 读取 logo 失败', e);
+}
+
+// 点击 logo 区域时触发文件选择
+logoWrap.addEventListener('click', ()=> logoInput.click());
+
+// 选择文件后读取并显示（并存 localStorage）
+logoInput.addEventListener('change', (ev)=>{
+    const file = ev.target.files && ev.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+        alert('请选择图片文件（png/jpg/jpeg/gif）');
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(evt){
+        const dataUrl = evt.target.result;
+        logoImg.src = dataUrl;
+        try{ localStorage.setItem('customLogoDataUrl', dataUrl); } catch(e){ console.warn('保存 logo 到 localStorage 失败', e); }
     };
+    reader.readAsDataURL(file);
+});
 
-    const pageBackgrounds = {
-        homeBtn: '#f5f7fa',
-        groupBtn: '#fff3e6',
-        earnBtn: '#f3ffe6',
-        swapBtn: '#e6f0ff',
-        profileBtn: '#faf0ff'
-    };
-
-    function setActive(button){
-        buttons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        bottomNav.style.background = navGradients[button.id] || navGradients.homeBtn;
-        document.body.style.backgroundColor = pageBackgrounds[button.id] || '#f0f2f5';
-    }
-
-    function updateContent(title, extraHtml=''){
-        mainContent.innerHTML = `<h2>${title}</h2><div class="wallet-address">${account ? "已连接钱包: " + account : "未获取到钱包地址"}</div>${extraHtml}`;
-    }
-
-    function addRippleEffect(e){
-        const ripple = document.createElement("span");
-        ripple.classList.add("ripple");
-        const rect = e.target.getBoundingClientRect();
-        ripple.style.left = `${e.clientX - rect.left}px`;
-        ripple.style.top = `${e.clientY - rect.top}px`;
-        e.target.appendChild(ripple);
-        setTimeout(() => ripple.remove(), 600);
-    }
-
-    homeBtn.addEventListener('click', (e) => { setActive(homeBtn); updateContent("欢迎来到 DApp 主页！"); addRippleEffect(e); });
-    groupBtn.addEventListener('click', (e) => { setActive(groupBtn); updateContent("这里是拼团页面（占位）"); addRippleEffect(e); });
-    earnBtn.addEventListener('click', (e) => { setActive(earnBtn); updateContent("这里是赚币页面（占位）"); addRippleEffect(e); });
-    swapBtn.addEventListener('click', (e) => { setActive(swapBtn); updateContent("这里是兑换页面（占位）"); addRippleEffect(e); });
-    profileBtn.addEventListener('click', (e) => { 
-        setActive(profileBtn); 
-        const profileHtml = `
-            <div class="profile-container">
-                <div class="profile-avatar"></div>
-                <div class="profile-info">
-                    用户名: 占位用户<br>
-                    钱包状态: ${account ? '已连接' : '未连接'}<br>
-                    钱包余额: 0.0 ETH
-                </div>
-                <div class="profile-buttons">
-                    <button onclick="alert('修改资料功能开发中')">修改资料</button>
-                    <button onclick="alert('退出登录功能开发中')">退出登录</button>
-                </div>
-            </div>`;
-        updateContent("个人中心", profileHtml); 
-        addRippleEffect(e); 
-    });
+/* ====================== 页面初始状态 ====================== */
+// 设置默认激活页（页面载入时）
+document.addEventListener('DOMContentLoaded', ()=>{
+    // 初始页面背景与底部导航
+    setActive(homeBtn);
+    updateContent('欢迎来到 DApp 主页！');
+});
 </script>
 
 </body>
