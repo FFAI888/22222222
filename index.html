@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>连接钱包登录页面 v0.01</title>
+</head>
+<body>
+    <h1>欢迎使用钱包登录</h1>
+    <button id="connectWalletBtn">连接钱包</button>
+    <p id="walletAddress">钱包地址未连接</p>
+
+    <script>
+        const connectWalletBtn = document.getElementById('connectWalletBtn');
+        const walletAddress = document.getElementById('walletAddress');
+
+        connectWalletBtn.addEventListener('click', async () => {
+            // 检查是否安装了 MetaMask
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    // 请求连接钱包
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    walletAddress.innerText = '已连接钱包地址: ' + accounts[0];
+                } catch (error) {
+                    console.error(error);
+                    walletAddress.innerText = '连接失败，请重试';
+                }
+            } else {
+                walletAddress.innerText = '未检测到 MetaMask，请安装钱包';
+            }
+        });
+    </script>
+</body>
+</html>
