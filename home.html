@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DApp 主页 v0.21</title>
+<title>DApp 主页 v0.22</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -35,12 +35,12 @@
     .bottom-nav {
         display: flex;
         justify-content: space-around;
-        background: linear-gradient(270deg, #e0e0e0cc, #d0e6f5cc, #e0e0e0cc); /* 整体渐变流动 */
+        background: linear-gradient(270deg, #e0e0e0cc, #d0e6f5cc, #e0e0e0cc);
         backdrop-filter: blur(10px);
         border-top: 1px solid #ccc;
         height: 70px;
         position: relative;
-        animation: navGradientFlow 8s ease-in-out infinite;
+        animation: navGradientFlow 10s ease-in-out infinite;
     }
 
     .bottom-nav button {
@@ -68,12 +68,13 @@
         filter: grayscale(100%);
     }
 
-    /* 激活按钮微动 + 缩放 + 背景渐变 */
+    /* 激活按钮微动 + 缩放 + 渐变循环 */
     .bottom-nav button.active {
         color: #fff;
-        background: linear-gradient(135deg, #4CAF50, #81C784);
-        animation: gradientMove 3s linear infinite, activeFloatScale 2s ease-in-out infinite;
+        background: linear-gradient(135deg, #4CAF50, #81C784, #A5D6A7, #4CAF50);
+        animation: gradientMoveButton 5s linear infinite, activeFloatScale 2s ease-in-out infinite;
         box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        background-size: 300% 300%;
     }
 
     .bottom-nav button.active img {
@@ -87,7 +88,8 @@
     }
 
     .bottom-nav button:active {
-        transform: scale(1.15);
+        transform: scale(1.2);
+        transition: transform 0.15s ease-out;
     }
 
     /* 点击波纹 */
@@ -109,8 +111,8 @@
         50% { transform: translateY(-3px) scale(1.05); }
     }
 
-    /* 激活按钮渐变流动 */
-    @keyframes gradientMove {
+    /* 激活按钮背景渐变循环 */
+    @keyframes gradientMoveButton {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
@@ -121,10 +123,6 @@
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
-    }
-
-    .bottom-nav button.active {
-        background-size: 200% 200%;
     }
 </style>
 </head>
