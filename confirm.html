@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>确认关系页面 v0.02</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .confirm-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #2196F3;
+            color: white;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="confirm-container">
+        <h2>确认关系</h2>
+        <p id="walletInfo">加载中...</p>
+        <button id="confirmBtn">确认并进入主页</button>
+    </div>
+
+    <script>
+        // 从 URL 获取钱包地址
+        const urlParams = new URLSearchParams(window.location.search);
+        const account = urlParams.get('account');
+        const walletInfo = document.getElementById('walletInfo');
+        const confirmBtn = document.getElementById('confirmBtn');
+
+        if(account){
+            walletInfo.innerText = "你的钱包地址: " + account;
+        } else {
+            walletInfo.innerText = "未获取到钱包地址，请返回登录页面";
+            confirmBtn.disabled = true;
+        }
+
+        confirmBtn.addEventListener('click', () => {
+            // 点击确认跳转主页（暂时是首页 placeholder）
+            window.location.href = "home.html";
+        });
+    </script>
+</body>
+</html>
