@@ -1,110 +1,143 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DApp 主页 v0.08</title>
-    <!-- Font Awesome 图标库 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-o8Cn0d/O7/9/9+p3X6kZHQwO0k0zM6j4U7d/7q9kCGRP6e6Q8xZgqfF9U6EcgGZ8bX9U+2w2ZbFXjJLoQw3l6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f0f2f5;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-        .content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-        }
-        .content h2 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .wallet-address {
-            font-weight: bold;
-            color: #4CAF50;
-        }
-        .bottom-nav {
-            display: flex;
-            justify-content: space-around;
-            background-color: #fff;
-            border-top: 1px solid #ccc;
-            padding: 5px 0;
-        }
-        .bottom-nav button {
-            flex: 1;
-            background: none;
-            border: none;
-            font-size: 12px;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #555;
-            padding: 5px 0;
-            transition: transform 0.2s, color 0.3s;
-        }
-        .bottom-nav button.active {
-            color: #fff;
-            background: linear-gradient(135deg, #4CAF50, #81C784);
-            border-radius: 10px;
-            padding: 8px 0;
-        }
-        .bottom-nav button:active {
-            transform: scale(1.15);
-        }
-        .bottom-nav i {
-            font-size: 20px;
-            margin-bottom: 2px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DApp 主页 v0.12</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #f0f2f5;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+    .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+    .content h2 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+    .wallet-address {
+        font-weight: bold;
+        color: #4CAF50;
+    }
+    .bottom-nav {
+        display: flex;
+        justify-content: space-around;
+        background-color: #fff;
+        border-top: 1px solid #ccc;
+        padding: 10px 0;
+        height: 90px;
+    }
+    .bottom-nav button {
+        flex: 1;
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 5px 0;
+        font-size: 16px;
+        color: #888;
+        border-radius: 12px;
+        transition: transform 0.2s, color 0.3s, background 0.5s;
+    }
+    .bottom-nav button img {
+        width: 30px;
+        height: 30px;
+        margin-bottom: 4px;
+        transition: filter 0.3s, transform 0.3s;
+        filter: grayscale(100%);
+    }
+    .bottom-nav button.active {
+        color: #fff;
+        background: linear-gradient(135deg, #4CAF50, #81C784);
+        animation: gradientMove 3s linear infinite;
+    }
+    .bottom-nav button.active img {
+        filter: grayscale(0%) brightness(1.2);
+        transform: scale(1.1);
+    }
+    .bottom-nav button:hover {
+        transform: scale(1.05);
+    }
+    .bottom-nav button:active {
+        transform: scale(1.15);
+    }
+
+    /* 渐变流动动画 */
+    @keyframes gradientMove {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    .bottom-nav button.active {
+        background-size: 200% 200%;
+    }
+</style>
 </head>
 <body>
-    <div class="content">
-        <h2>欢迎来到 DApp 主页！</h2>
-        <div class="wallet-address" id="walletAddress">加载钱包地址...</div>
-    </div>
 
-    <div class="bottom-nav">
-        <button id="homeBtn" class="active"><i class="fas fa-home"></i>首页</button>
-        <button id="groupBtn"><i class="fas fa-users"></i>拼团</button>
-        <button id="earnBtn"><i class="fas fa-coins"></i>赚币</button>
-        <button id="swapBtn"><i class="fas fa-exchange-alt"></i>兑换</button>
-    </div>
+<div class="content">
+    <h2>欢迎来到 DApp 主页！</h2>
+    <div class="wallet-address" id="walletAddress">加载钱包地址...</div>
+</div>
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const account = urlParams.get('account');
-        const walletAddressDiv = document.getElementById('walletAddress');
-        walletAddressDiv.innerText = account ? "已连接钱包: " + account : "未获取到钱包地址";
+<div class="bottom-nav">
+    <button id="homeBtn" class="active">
+        <img src="https://img.icons8.com/fluency/48/000000/home.png" alt="首页">
+        首页
+    </button>
+    <button id="groupBtn">
+        <img src="https://img.icons8.com/fluency/48/000000/conference.png" alt="拼团">
+        拼团
+    </button>
+    <button id="earnBtn">
+        <img src="https://img.icons8.com/fluency/48/000000/coin-in-hand.png" alt="赚币">
+        赚币
+    </button>
+    <button id="swapBtn">
+        <img src="https://img.icons8.com/fluency/48/000000/exchange.png" alt="兑换">
+        兑换
+    </button>
+</div>
 
-        const homeBtn = document.getElementById('homeBtn');
-        const groupBtn = document.getElementById('groupBtn');
-        const earnBtn = document.getElementById('earnBtn');
-        const swapBtn = document.getElementById('swapBtn');
-        const contentDiv = document.querySelector('.content');
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const account = urlParams.get('account');
+    const walletAddressDiv = document.getElementById('walletAddress');
+    walletAddressDiv.innerText = account ? "已连接钱包: " + account : "未获取到钱包地址";
 
-        function setActive(button){
-            [homeBtn, groupBtn, earnBtn, swapBtn].forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-        }
+    const homeBtn = document.getElementById('homeBtn');
+    const groupBtn = document.getElementById('groupBtn');
+    const earnBtn = document.getElementById('earnBtn');
+    const swapBtn = document.getElementById('swapBtn');
+    const contentDiv = document.querySelector('.content');
 
-        function updateContent(title){
-            contentDiv.innerHTML = `<h2>${title}</h2><div class="wallet-address">${account ? "已连接钱包: " + account : "未获取到钱包地址"}</div>`;
-        }
+    function setActive(button){
+        [homeBtn, groupBtn, earnBtn, swapBtn].forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+    }
 
-        homeBtn.addEventListener('click', () => { setActive(homeBtn); updateContent("欢迎来到 DApp 主页！"); });
-        groupBtn.addEventListener('click', () => { setActive(groupBtn); updateContent("这里是拼团页面（占位）"); });
-        earnBtn.addEventListener('click', () => { setActive(earnBtn); updateContent("这里是赚币页面（占位）"); });
-        swapBtn.addEventListener('click', () => { setActive(swapBtn); updateContent("这里是兑换页面（占位）"); });
-    </script>
+    function updateContent(title){
+        contentDiv.innerHTML = `<h2>${title}</h2><div class="wallet-address">${account ? "已连接钱包: " + account : "未获取到钱包地址"}</div>`;
+    }
+
+    homeBtn.addEventListener('click', () => { setActive(homeBtn); updateContent("欢迎来到 DApp 主页！"); });
+    groupBtn.addEventListener('click', () => { setActive(groupBtn); updateContent("这里是拼团页面（占位）"); });
+    earnBtn.addEventListener('click', () => { setActive(earnBtn); updateContent("这里是赚币页面（占位）"); });
+    swapBtn.addEventListener('click', () => { setActive(swapBtn); updateContent("这里是兑换页面（占位）"); });
+</script>
+
 </body>
 </html>
