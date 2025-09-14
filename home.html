@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DApp 主页 v0.18</title>
+<title>DApp 主页 v0.19</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -34,11 +34,12 @@
     .bottom-nav {
         display: flex;
         justify-content: space-around;
-        background: linear-gradient(180deg, #e0e0e0cc, #d0e6f5cc); /* 可自定义渐变 */
+        background: linear-gradient(180deg, #e0e0e0cc, #d0e6f5cc); /* 默认渐变 */
         backdrop-filter: blur(10px);
         border-top: 1px solid #ccc;
         height: 70px;
         position: relative;
+        transition: background 0.5s ease;
     }
     .bottom-nav button {
         flex: 1;
@@ -66,7 +67,7 @@
     .bottom-nav button.active {
         color: #fff;
         background: linear-gradient(135deg, #4CAF50, #81C784);
-        animation: gradientMove 3s linear infinite, activeFloat 2s ease-in-out infinite; /* 激活微动效果 */
+        animation: gradientMove 3s linear infinite, activeFloat 2s ease-in-out infinite; /* 激活微动 */
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
     .bottom-nav button.active img {
@@ -118,7 +119,7 @@
     <div class="wallet-address" id="walletAddress">加载钱包地址...</div>
 </div>
 
-<div class="bottom-nav">
+<div class="bottom-nav" id="bottomNav">
     <button id="homeBtn" class="active">
         <img src="https://img.icons8.com/fluency/48/000000/home.png" alt="首页">
         首页
@@ -143,6 +144,7 @@
     const walletAddressDiv = document.getElementById('walletAddress');
     walletAddressDiv.innerText = account ? "已连接钱包: " + account : "未获取到钱包地址";
 
+    const bottomNav = document.getElementById('bottomNav');
     const homeBtn = document.getElementById('homeBtn');
     const groupBtn = document.getElementById('groupBtn');
     const earnBtn = document.getElementById('earnBtn');
@@ -150,9 +152,17 @@
     const contentDiv = document.querySelector('.content');
     const buttons = [homeBtn, groupBtn, earnBtn, swapBtn];
 
+    const navGradients = {
+        homeBtn: 'linear-gradient(180deg, #e0e0e0cc, #d0e6f5cc)',
+        groupBtn: 'linear-gradient(180deg, #ffe6cc, #ffd9b3)',
+        earnBtn: 'linear-gradient(180deg, #e6f5cc, #d9f5b3)',
+        swapBtn: 'linear-gradient(180deg, #cce0ff, #b3d9ff)'
+    };
+
     function setActive(button){
         buttons.forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
+        bottomNav.style.background = navGradients[button.id] || navGradients.homeBtn;
     }
 
     function updateContent(title){
