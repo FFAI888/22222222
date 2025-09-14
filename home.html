@@ -3,121 +3,142 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>DApp 主页 v0.31</title>
+<title>DApp 主页 v0.30</title>
 <style>
     :root{
-        --topbar-height:56px;
-        --nav-height:70px;
+        --topbar-height: 56px;
+        --nav-height: 70px;
     }
     html,body{
         height:100%;
         margin:0;
         padding:0;
     }
-    body{
+    body {
         font-family: Arial, sans-serif;
-        display:flex;
-        flex-direction:column;
-        height:100vh;
-        background-color:#f0f2f5;
-        transition: background-color 0.6s ease,color 0.4s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background-color: #f0f2f5;
+        transition: background-color 0.6s ease, color 0.4s ease;
     }
-    /* 顶部条 */
-    .topbar{
+
+    /* 顶部条（logo + 标题）*/
+    .topbar {
         position: fixed;
-        top:0; left:0; right:0;
-        height:var(--topbar-height);
-        display:flex;
-        align-items:center;
-        gap:12px;
-        padding:0 14px;
-        background:rgba(255,255,255,0.6);
-        backdrop-filter:blur(6px);
-        border-bottom:1px solid rgba(0,0,0,0.06);
-        z-index:30;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--topbar-height);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 14px;
+        background: rgba(255,255,255,0.6);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid rgba(0,0,0,0.06);
+        z-index: 30;
     }
-    .logo-wrap{
+    .logo-wrap {
         display:flex;
         align-items:center;
         gap:10px;
-        cursor:pointer;
-        background-color:#e0f2ff;  /* 浅色背景 */
-        border-radius:8px;
-        padding:4px;
+        cursor: pointer;
     }
-    .logo-img{
+    .logo-img {
         width:40px;
         height:40px;
         border-radius:8px;
         object-fit:cover;
         border:1px solid rgba(0,0,0,0.08);
-        box-shadow:0 1px 3px rgba(0,0,0,0.06);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
-    .title-wrap{
-        display:flex;
-        flex-direction:column;
-        justify-content:center;
-        align-items:center;
-        line-height:1.1;
-    }
-    .app-title{
-        font-weight:700;
+    .app-title {
         font-size:18px;
+        font-weight:600;
         color:#222;
-        user-select:none;
+        user-select: none;
     }
-    .app-subtitle{
-        font-size:13px;
+    .logo-subtext{
+        font-size:12px;
         color:#666;
+        margin-left:6px;
     }
-
-    #logoInput{ display:none; }
+    #logoInput { display:none; }
 
     /* 主内容 */
-    .main-wrap{
+    .main-wrap {
         flex:1;
         display:flex;
         flex-direction:column;
         padding-top: calc(var(--topbar-height) + 10px);
         padding-bottom: calc(var(--nav-height) + 10px);
-        box-sizing:border-box;
+        box-sizing: border-box;
     }
-    .content{
-        flex:1;
+    .content {
+        flex: 1;
         display:flex;
         flex-direction:column;
         justify-content:center;
         align-items:center;
         text-align:center;
-        padding:20px;
+        padding: 20px;
     }
-    .content h2{
-        color:#333;
+    .content h2 {
+        color: #333;
         margin:0 0 10px 0;
         transition: color 0.4s ease;
     }
-    .wallet-address{
+    .wallet-address {
         font-weight:bold;
         color:#4CAF50;
     }
 
     /* 个人中心 */
-    .profile-container{ display:flex; flex-direction:column; align-items:center; margin-top:15px; }
-    .profile-avatar{ width:80px; height:80px; border-radius:50%; background:#ddd url('https://img.icons8.com/fluency/96/000000/user-male-circle.png') no-repeat center; background-size:cover; margin-bottom:10px; border:2px solid #aaa; }
-    .profile-info{ font-size:14px; color:#555; margin-bottom:15px; text-align:center; }
-    .profile-buttons{ display:flex; gap:10px; }
-    .profile-buttons button{ padding:8px 16px; border:none; border-radius:8px; cursor:pointer; font-size:14px; transition:background 0.3s, transform 0.2s; }
+    .profile-container{
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        margin-top:15px;
+    }
+    .profile-avatar{
+        width:80px;
+        height:80px;
+        border-radius:50%;
+        background:#ddd url('https://img.icons8.com/fluency/96/000000/user-male-circle.png') no-repeat center;
+        background-size:cover;
+        margin-bottom:10px;
+        border:2px solid #aaa;
+    }
+    .profile-info{
+        font-size:14px;
+        color:#555;
+        margin-bottom:15px;
+        text-align:center;
+    }
+    .profile-buttons{
+        display:flex;
+        gap:10px;
+    }
+    .profile-buttons button{
+        padding:8px 16px;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+        font-size:14px;
+        transition:background 0.3s, transform 0.2s;
+    }
     .profile-buttons button:first-child{ background:#4CAF50; color:#fff; }
     .profile-buttons button:last-child{ background:#f44336; color:#fff; }
     .profile-buttons button:hover{ transform:scale(1.03); }
 
     /* 底部导航 */
-    .bottom-nav{
+    .bottom-nav {
         display:flex;
         justify-content:space-around;
         background: linear-gradient(270deg, #e0e0e0cc, #d0e6f5cc, #e0e0e0cc);
         backdrop-filter: blur(10px);
-        border-top:1px solid #ccc;
+        border-top: 1px solid #ccc;
         height: var(--nav-height);
         position: fixed;
         left:0;
@@ -126,6 +147,7 @@
         z-index:20;
         animation: navGradientFlow 10s ease-in-out infinite;
     }
+
     .bottom-nav button{
         flex:1;
         background:none;
@@ -138,17 +160,28 @@
         font-size:16px;
         color:#555;
         border-radius:12px;
-        transition: transform 0.2s,color 0.3s,box-shadow 0.3s;
+        transition: transform 0.2s, color 0.3s, box-shadow 0.3s;
         overflow:hidden;
         position:relative;
         padding:6px 4px;
     }
-    .bottom-nav button img{ width:28px;height:28px;margin-bottom:4px; transition:filter .3s, transform .3s; filter:grayscale(100%); }
-    .bottom-nav button.active{ color:#fff; background: linear-gradient(135deg,#4CAF50,#81C784,#A5D6A7,#4CAF50); animation: gradientMoveButton 5s linear infinite, activeFloatScale 2s ease-in-out infinite; box-shadow:0 4px 12px rgba(0,0,0,0.25); background-size:300% 300%; }
+    .bottom-nav button img{
+        width:28px;height:28px;margin-bottom:4px;
+        transition:filter .3s, transform .3s;
+        filter:grayscale(100%);
+    }
+    .bottom-nav button.active{
+        color:#fff;
+        background: linear-gradient(135deg,#4CAF50,#81C784,#A5D6A7,#4CAF50);
+        animation: gradientMoveButton 5s linear infinite, activeFloatScale 2s ease-in-out infinite;
+        box-shadow:0 4px 12px rgba(0,0,0,0.25);
+        background-size:300% 300%;
+    }
     .bottom-nav button.active img{ filter:grayscale(0%) brightness(1.2); transform:scale(1.15); }
     .bottom-nav button:hover{ transform:scale(1.05); box-shadow:0 2px 6px rgba(0,0,0,0.15); }
     .bottom-nav button:active{ transform:scale(1.2); transition: transform .15s ease-out; }
 
+    /* 波纹效果 */
     .ripple{ position:absolute;border-radius:50%;transform:scale(0);animation:ripple .6s linear;background-color:rgba(255,255,255,0.6);pointer-events:none;}
     @keyframes ripple{ to{ transform:scale(4); opacity:0; } }
     @keyframes activeFloatScale{ 0%,100%{ transform:translateY(0) scale(1); } 50%{ transform:translateY(-3px) scale(1.05); } }
@@ -166,41 +199,41 @@
 </head>
 <body>
 
-<!-- 顶部条 -->
-<div class="topbar" role="banner">
-    <label class="logo-wrap" id="logoWrap" title="点击更换 logo">
-        <img id="logoImg" class="logo-img" src="https://img.icons8.com/fluency/96/000000/blockchain.png" alt="logo">
-    </label>
-    <div class="title-wrap">
-        <div class="app-title">融链</div>
-        <div class="app-subtitle">RongChain</div>
+    <!-- 顶部条 -->
+    <div class="topbar" role="banner">
+        <label class="logo-wrap" id="logoWrap" title="点击更换 logo">
+            <img id="logoImg" class="logo-img" src="https://img.icons8.com/fluency/96/000000/blockchain.png" alt="logo">
+        </label>
+        <input id="logoInput" type="file" accept="image/*">
+        <div style="display:flex;flex-direction:column;justify-content:center;">
+            <div class="app-title">融链</div>
+            <div class="logo-subtext">DApp</div>
+        </div>
     </div>
-    <input id="logoInput" type="file" accept="image/*">
-</div>
 
-<!-- 主体 -->
-<div class="main-wrap">
-    <div class="content" id="mainContent">
-        <h2>欢迎来到 DApp 主页！</h2>
-        <div class="wallet-address" id="walletAddress">加载钱包地址...</div>
+    <!-- 主体 -->
+    <div class="main-wrap">
+        <div class="content" id="mainContent">
+            <h2>欢迎来到 DApp 主页！</h2>
+            <div class="wallet-address" id="walletAddress">加载钱包地址...</div>
+        </div>
     </div>
-</div>
 
-<!-- 底部导航 -->
-<div class="bottom-nav" id="bottomNav">
-    <button id="homeBtn" class="active"><img src="https://img.icons8.com/fluency/48/000000/home.png" alt="首页">首页</button>
-    <button id="groupBtn"><img src="https://img.icons8.com/fluency/48/000000/conference.png" alt="拼团">拼团</button>
-    <button id="earnBtn"><img src="https://img.icons8.com/fluency/48/000000/coin-in-hand.png" alt="赚币">赚币</button>
-    <button id="swapBtn"><img src="https://img.icons8.com/fluency/48/000000/exchange.png" alt="兑换">兑换</button>
-    <button id="profileBtn"><img src="https://img.icons8.com/fluency/48/000000/user-male-circle.png" alt="我的">我的</button>
-</div>
+    <!-- 底部导航 -->
+    <div class="bottom-nav" id="bottomNav">
+        <button id="homeBtn" class="active"><img src="https://img.icons8.com/fluency/48/000000/home.png" alt="首页">首页</button>
+        <button id="groupBtn"><img src="https://img.icons8.com/fluency/48/000000/conference.png" alt="拼团">拼团</button>
+        <button id="earnBtn"><img src="https://img.icons8.com/fluency/48/000000/coin-in-hand.png" alt="赚币">赚币</button>
+        <button id="swapBtn"><img src="https://img.icons8.com/fluency/48/000000/exchange.png" alt="兑换">兑换</button>
+        <button id="profileBtn"><img src="https://img.icons8.com/fluency/48/000000/user-male-circle.png" alt="我的">我的</button>
+    </div>
 
 <script>
-// ====================== 初始化 ======================
+/* 初始化 */
 const urlParams = new URLSearchParams(window.location.search);
 const account = urlParams.get('account');
 const walletAddressDiv = document.getElementById('walletAddress');
-walletAddressDiv.innerText = account ? "已连接钱包: "+account : "未获取到钱包地址";
+walletAddressDiv.innerText = account ? "已连接钱包: " + account : "未获取到钱包地址";
 
 const mainContent = document.getElementById('mainContent');
 const bottomNav = document.getElementById('bottomNav');
@@ -209,32 +242,33 @@ const groupBtn = document.getElementById('groupBtn');
 const earnBtn = document.getElementById('earnBtn');
 const swapBtn = document.getElementById('swapBtn');
 const profileBtn = document.getElementById('profileBtn');
-const buttons = [homeBtn,groupBtn,earnBtn,swapBtn,profileBtn];
+const buttons = [homeBtn, groupBtn, earnBtn, swapBtn, profileBtn];
 
-// 导航与页面背景
+/* 导航渐变 & 页面背景 */
 const navGradients = {
-    homeBtn:'linear-gradient(270deg,#e0e0e0cc,#d0e6f5cc,#e0e0e0cc)',
-    groupBtn:'linear-gradient(270deg,#ffe6cc,#ffd9b3,#ffe6cc)',
-    earnBtn:'linear-gradient(270deg,#e6f5cc,#d9f5b3,#e6f5cc)',
-    swapBtn:'linear-gradient(270deg,#cce0ff,#b3d9ff,#cce0ff)',
-    profileBtn:'linear-gradient(270deg,#f0d6ff,#e0b3ff,#f0d6ff)'
+    homeBtn: 'linear-gradient(270deg, #e0e0e0cc, #d0e6f5cc, #e0e0e0cc)',
+    groupBtn: 'linear-gradient(270deg, #ffe6cc, #ffd9b3, #ffe6cc)',
+    earnBtn: 'linear-gradient(270deg, #e6f5cc, #d9f5b3, #e6f5cc)',
+    swapBtn: 'linear-gradient(270deg, #cce0ff, #b3d9ff, #cce0ff)',
+    profileBtn: 'linear-gradient(270deg, #f0d6ff, #e0b3ff, #f0d6ff)'
 };
 const pageBackgrounds = {
-    homeBtn:'#f5f7fa',
-    groupBtn:'#fff3e6',
-    earnBtn:'#f3ffe6',
-    swapBtn:'#e6f0ff',
-    profileBtn:'#faf0ff'
+    homeBtn:'#f5f7fa', groupBtn:'#fff3e6', earnBtn:'#f3ffe6', swapBtn:'#e6f0ff', profileBtn:'#faf0ff'
 };
+
 function setActive(button){
     buttons.forEach(btn=>btn.classList.remove('active'));
     button.classList.add('active');
-    bottomNav.style.background=navGradients[button.id]||navGradients.homeBtn;
-    document.body.style.backgroundColor=pageBackgrounds[button.id]||'#f0f2f5';
+    bottomNav.style.background = navGradients[button.id] || navGradients.homeBtn;
+    document.body.style.backgroundColor = pageBackgrounds[button.id] || '#f0f2f5';
 }
-function updateContent(title,extraHtml=''){
-    mainContent.innerHTML=`<h2>${title}</h2><div class="wallet-address">${account?"已连接钱包: "+account:"未获取到钱包地址"}</div>${extraHtml}`;
+
+/* 内容更新 */
+function updateContent(title, extraHtml=''){
+    mainContent.innerHTML = `<h2>${title}</h2><div class="wallet-address">${account ? "已连接钱包: "+account:"未获取到钱包地址"}</div>${extraHtml}`;
 }
+
+/* 波纹效果 */
 function addRippleEffect(e){
     const target=e.currentTarget;
     const rect=target.getBoundingClientRect();
@@ -242,63 +276,58 @@ function addRippleEffect(e){
     const y=e.clientY-rect.top;
     const ripple=document.createElement('span');
     ripple.className='ripple';
-    ripple.style.left=`${x}px`;
-    ripple.style.top=`${y}px`;
+    ripple.style.left=x+'px';
+    ripple.style.top=y+'px';
     target.appendChild(ripple);
     setTimeout(()=>ripple.remove(),600);
 }
-// 按钮事件
-homeBtn.addEventListener('click',e=>{ setActive(homeBtn); updateContent('欢迎来到 DApp 主页！'); addRippleEffect(e); });
-groupBtn.addEventListener('click',e=>{ setActive(groupBtn); updateContent('这里是拼团页面（占位）'); addRippleEffect(e); });
-earnBtn.addEventListener('click',e=>{ setActive(earnBtn); updateContent('这里是赚币页面（占位）'); addRippleEffect(e); });
-swapBtn.addEventListener('click',e=>{ setActive(swapBtn);
-                                     // 继续上次 JS 代码部分
-swapBtn.addEventListener('click',e=>{ setActive(swapBtn); updateContent('这里是兑换页面（占位）'); addRippleEffect(e); });
-profileBtn.addEventListener('click',e=>{
+
+/* 按钮绑定 */
+homeBtn.addEventListener('click',(e)=>{ setActive(homeBtn); updateContent('欢迎来到 DApp 主页！'); addRippleEffect(e); });
+groupBtn.addEventListener('click',(e)=>{ setActive(groupBtn); updateContent('这里是拼团页面（占位）'); addRippleEffect(e); });
+earnBtn.addEventListener('click',(e)=>{ setActive(earnBtn); updateContent('这里是赚币页面（占位）'); addRippleEffect(e); });
+swapBtn.addEventListener('click',(e)=>{ setActive(swapBtn); updateContent('这里是兑换页面（占位）'); addRippleEffect(e); });
+profileBtn.addEventListener('click',(e)=>{
     setActive(profileBtn);
-    const profileHtml=`
-        <div class="profile-container">
-            <div class="profile-avatar"></div>
-            <div class="profile-info">
-                用户名: 占位用户<br>
-                钱包状态: ${account?'已连接':'未连接'}<br>
-                钱包余额: 0.0 ETH
-            </div>
-            <div class="profile-buttons">
-                <button onclick="alert('修改资料功能开发中')">修改资料</button>
-                <button onclick="alert('退出登录功能开发中')">退出登录</button>
-            </div>
-        </div>`;
+    const profileHtml=`<div class="profile-container">
+        <div class="profile-avatar"></div>
+        <div class="profile-info">
+            用户名: 占位用户<br>
+            钱包状态: ${account?'已连接':'未连接'}<br>
+            钱包余额: 0.0 ETH
+        </div>
+        <div class="profile-buttons">
+            <button onclick="alert('修改资料功能开发中')">修改资料</button>
+            <button onclick="alert('退出登录功能开发中')">退出登录</button>
+        </div>
+    </div>`;
     updateContent('个人中心',profileHtml);
     addRippleEffect(e);
 });
 
-// ====================== Logo 上传 ======================
+/* logo 上传 */
 const logoImg=document.getElementById('logoImg');
 const logoInput=document.getElementById('logoInput');
 const logoWrap=document.getElementById('logoWrap');
-
 try{
     const saved=localStorage.getItem('customLogoDataUrl');
-    if(saved){ logoImg.src=saved; }
-}catch(e){ console.warn('localStorage读取logo失败',e); }
-
+    if(saved) logoImg.src=saved;
+}catch(e){console.warn(e);}
 logoWrap.addEventListener('click',()=>logoInput.click());
-
-logoInput.addEventListener('change',ev=>{
+logoInput.addEventListener('change',(ev)=>{
     const file=ev.target.files && ev.target.files[0];
-    if(!file) return;
-    if(!file.type.startsWith('image/')){ alert('请选择图片文件（png/jpg/jpeg/gif）'); return; }
+    if(!file)return;
+    if(!file.type.startsWith('image/')){ alert('请选择图片文件'); return; }
     const reader=new FileReader();
     reader.onload=function(evt){
         const dataUrl=evt.target.result;
         logoImg.src=dataUrl;
-        try{ localStorage.setItem('customLogoDataUrl',dataUrl); }catch(e){console.warn('保存logo到localStorage失败',e);}
+        try{localStorage.setItem('customLogoDataUrl',dataUrl);}catch(e){console.warn(e);}
     };
     reader.readAsDataURL(file);
 });
 
-// ====================== 页面初始状态 ======================
+/* 页面初始 */
 document.addEventListener('DOMContentLoaded',()=>{
     setActive(homeBtn);
     updateContent('欢迎来到 DApp 主页！');
