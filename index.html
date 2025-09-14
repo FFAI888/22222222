@@ -1,242 +1,46 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DApp 登录页 v0.17 ultimate</title>
-<style>
-body { font-family: Arial, sans-serif; background: linear-gradient(135deg,#a1c4fd,#c2e9fb); display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
-.card { background:#fff; border-radius:20px; padding:30px 20px; max-width:400px; width:90%; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.2); transition: transform 0.4s ease, opacity 0.4s ease, background 0.4s ease; animation: fadeIn 1s ease-out; position: relative; }
-.card.hide { opacity:0; transform:translateY(-30px); pointer-events:none; }
-h1 { color:#333; margin-bottom:25px; }
-button { width:100%; padding:15px; font-size:18px; margin:10px 0; border:none; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: all 0.25s ease; color:#fff; font-weight:bold; background-size:200% 200%; }
-button img { width:24px; height:24px; margin-right:10px; }
-button:disabled { opacity:0.6; cursor:not-allowed; }
-#connectMetaMaskBtn { background-image: linear-gradient(45deg,#f6851b,#e2761b); }
-#connectWalletConnectBtn { background-image: linear-gradient(45deg,#3b99fc,#2a82f5); }
-#connectCoinbaseBtn { background-image: linear-gradient(45deg,#0052ff,#00bfff); }
-#signLoginBtn { background-image: linear-gradient(45deg,#28a745,#218838); }
-#walletInfo, #walletInfoSuccess { margin-top:20px; display:flex; align-items:center; justify-content:center; font-size:16px; background:#f0f4f8; border-radius:12px; padding:10px 15px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-#walletInfo img, #walletInfoSuccess img { width:36px; height:36px; margin-right:10px; border-radius:50%; border:1px solid #ccc; }
-#loginStatus, #loginStatusSuccess, #balance, #ethPrice { margin-top:15px; font-size:16px; font-weight:bold; }
-#toast { visibility:hidden; min-width:200px; background:#333; color:#fff; text-align:center; border-radius:8px; padding:10px; position:fixed; bottom:50px; left:50%; transform:translateX(-50%); z-index:100; font-size:14px; }
-#toast.show { visibility:visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-#copyBtn { margin-left:10px; padding:5px 10px; font-size:14px; border:none; border-radius:8px; cursor:pointer; background:#007bff; color:#fff; }
-#copyBtn:hover { background:#0056b3; transform:scale(1.05); }
-@keyframes fadein { from{bottom:20px;opacity:0;} to{bottom:50px;opacity:1;} }
-@keyframes fadeout { from{bottom:50px;opacity:1;} to{bottom:20px;opacity:0;} }
-@keyframes fadeIn { from{opacity:0; transform:translateY(-20px);} to{opacity:1; transform:translateY(0);} }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>简单 DApp 示例 +0.01</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
 </head>
 <body>
+  <!-- 登录页 -->
+  <div id="loginPage" class="page">
+    <h1>连接钱包</h1>
+    <button id="connectWalletBtn">连接钱包</button>
+    <p id="walletAddress"></p>
+    <button id="goToConfirmBtn" disabled>下一步: 确认关系</button>
+  </div>
 
-<div class="card" id="loginCard">
-<h1>DApp 登录</h1>
-<button id="connectMetaMaskBtn"><img src="https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg">MetaMask</button>
-<button id="connectWalletConnectBtn"><img src="https://walletconnect.org/walletconnect-logo.svg">WalletConnect</button>
-<button id="connectCoinbaseBtn"><img src="https://avatars.githubusercontent.com/u/18060234?s=200&v=4">Coinbase</button>
-<button id="signLoginBtn" disabled>签名登录</button>
+  <!-- 确认关系页 -->
+  <div id="confirmPage" class="page" style="display:none">
+    <h1>确认关系</h1>
+    <p>示例关系确认</p>
+    <button id="goToHomeBtn">进入主页</button>
+  </div>
 
-<div id="walletInfo">
-<img id="walletAvatar" src="https://via.placeholder.com/36" alt="钱包图标">
-<span id="walletAddress">钱包未连接</span>
-</div>
-<p id="loginStatus">未登录</p>
-</div>
+  <!-- 主页 -->
+  <div id="homePage" class="page" style="display:none">
+    <h1>主页</h1>
+    <p>欢迎使用 DApp 示例！</p>
+    <div class="bottom-nav">
+      <button class="nav-btn" data-page="homeTab">首页</button>
+      <button class="nav-btn" data-page="groupTab">拼团</button>
+      <button class="nav-btn" data-page="earnTab">赚币</button>
+      <button class="nav-btn" data-page="tradeTab">交易</button>
+    </div>
+    <div id="tabContent">
+      <div id="homeTab">这是首页内容</div>
+      <div id="groupTab" style="display:none">这是拼团内容</div>
+      <div id="earnTab" style="display:none">这是赚币内容</div>
+      <div id="tradeTab" style="display:none">这是交易内容</div>
+    </div>
+  </div>
 
-<div class="card hide" id="successCard">
-<h1>登录成功</h1>
-<div>
-<label>切换链: </label>
-<select id="chainSelect">
-<option value="Ethereum">Ethereum</option>
-<option value="BSC">BSC</option>
-<option value="Polygon">Polygon</option>
-</select>
-</div>
-
-<div id="walletInfoSuccess">
-<img id="walletAvatarSuccess" src="https://via.placeholder.com/36" alt="钱包图标">
-<span id="walletAddressSuccess">地址/ENS</span>
-<button id="copyBtn">复制地址</button>
-</div>
-
-<p id="balance">余额: 0 ETH</p>
-<p id="ethPrice">ETH价格: --</p>
-
-<div id="tokenList" style="text-align:left;">
-<h3>ERC20 余额:</h3>
-<ul id="tokens"></ul>
-</div>
-
-<div id="txList" style="text-align:left;">
-<h3>最近交易:</h3>
-<ul id="txs"></ul>
-</div>
-
-<p id="loginStatusSuccess">已登录</p>
-</div>
-
-<div id="toast"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-<script>
-// ==== 全局变量 ====
-let web3, accounts=[], provider, connectedWallet='', currentChain='Ethereum';
-const loginCard=document.getElementById('loginCard');
-const successCard=document.getElementById('successCard');
-const walletAddressSpan=document.getElementById('walletAddress');
-const walletAvatar=document.getElementById('walletAvatar');
-const loginStatus=document.getElementById('loginStatus');
-const walletAddressSuccess=document.getElementById('walletAddressSuccess');
-const walletAvatarSuccess=document.getElementById('walletAvatarSuccess');
-const loginStatusSuccess=document.getElementById('loginStatusSuccess');
-const balanceEl=document.getElementById('balance');
-const ethPriceEl=document.getElementById('ethPrice');
-const tokenListEl=document.getElementById('tokens');
-const txListEl=document.getElementById('txs');
-const connectMetaMaskBtn=document.getElementById('connectMetaMaskBtn');
-const connectWalletConnectBtn=document.getElementById('connectWalletConnectBtn');
-const connectCoinbaseBtn=document.getElementById('connectCoinbaseBtn');
-const signLoginBtn=document.getElementById('signLoginBtn');
-const copyBtn=document.getElementById('copyBtn');
-const toast=document.getElementById('toast');
-const chainSelect=document.getElementById('chainSelect');
-
-const tokens = [
-{symbol:'USDT', address:'0xdAC17F958D2ee523a2206206994597C13D831ec7', decimals:6},
-{symbol:'USDC', address:'0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', decimals:6},
-{symbol:'DAI',  address:'0x6B175474E89094C44Da98b954EedeAC495271d0F', decimals:18}
-];
-
-const chains = {
-Ethereum:{chainId:'0x1', rpc:'https://mainnet.infura.io/v3/YOUR_INFURA_KEY'},
-BSC:{chainId:'0x38', rpc:'https://bsc-dataseed.binance.org/'},
-Polygon:{chainId:'0x89', rpc:'https://polygon-rpc.com/'}
-};
-
-// ==== 工具函数 ====
-function showToast(msg){toast.innerText=msg; toast.className="show"; setTimeout(()=>{toast.className="";},3000);}
-function shortAddress(addr){return addr.slice(0,6)+'...'+addr.slice(-4);}
-async function getENS(addr){try{let n=await web3.eth.ens.getName(addr);return n.name||null}catch(e){return null}}
-async function getBalance(addr){try{let b=await web3.eth.getBalance(addr);return parseFloat(web3.utils.fromWei(b,'ether')).toFixed(4);}catch(e){return '0.0000'}}
-
-async function updateWalletInfo(addr,type){
-let ens=await getENS(addr); let disp=ens?ens:shortAddress(addr);
-walletAddressSpan.innerText=disp; walletAvatar.src=type==='MetaMask'? "https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg": type==='WalletConnect'? "https://walletconnect.org/walletconnect-logo.svg":"https://avatars.githubusercontent.com/u/18060234?s=200&v=4";
-walletAddressSuccess.innerText=disp; walletAvatarSuccess.src=walletAvatar.src;
-let bal=await getBalance(addr); balanceEl.innerText=`余额: ${bal} ETH`;
-}
-
-// ==== 链切换 ====
-async function switchChain(chainName){
-if(!window.ethereum) return showToast('钱包不支持切换链');
-let chain=chains[chainName];
-try{ await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:chain.chainId}]});
-web3=new Web3(window.ethereum); currentChain=chainName; showToast(`已切换至 ${chainName}`); refreshWalletData();
-}catch(e){console.error(e);showToast('切换链失败');}
-}
-chainSelect.addEventListener('change',()=>switchChain(chainSelect.value));
-
-// ==== 复制地址 ====
-copyBtn.onclick=()=>{navigator.clipboard.writeText(accounts[0]); showToast('已复制地址');}
-
-// ==== 钱包连接函数（MetaMask / WalletConnect / Coinbase Wallet） ====
-async function connectMetaMask(){ if(window.ethereum){ provider=window.ethereum; web3=new Web3(provider); accounts=await provider.request({method:'eth_requestAccounts'}); connectedWallet='MetaMask'; signLoginBtn.disabled=false; loginCard.classList.add('hide'); successCard.classList.remove('hide'); refreshWalletData(); showToast('MetaMask 已连接'); provider.on("accountsChanged", (accs)=>{ accounts=accs; refreshWalletData(); }); provider.on("chainChanged", ()=>refreshWalletData()); }else showToast('未安装 MetaMask'); }
-connectMetaMaskBtn.onclick=connectMetaMask;
-
-async function connectWalletConnect(){
-try{
-provider = new WalletConnectProvider.default({rpc:{1:chains.Ethereum.rpc,56:chains.BSC.rpc,137:chains.Polygon.rpc}});
-await provider.enable();
-web3=new Web3(provider); accounts=await web3.eth.getAccounts(); connectedWallet='WalletConnect';
-signLoginBtn.disabled=false; loginCard.classList.add('hide'); successCard.classList.remove('hide'); refreshWalletData();
-showToast('WalletConnect 已连接');
-provider.on("accountsChanged",(accs)=>{accounts=accs; refreshWalletData();});
-provider.on("chainChanged",()=>refreshWalletData());
-provider.on("disconnect",()=>{accounts=[]; connectedWallet=''; loginCard.classList.remove('hide'); successCard.classList.add('hide'); showToast('WalletConnect 已断开');});
-}catch(e){console.error(e); showToast('WalletConnect 连接失败');}
-}
-connectWalletConnectBtn.onclick=connectWalletConnect;
-
-async function connectCoinbase(){
-try{
-const CoinbaseWalletSDK=window.CoinbaseWalletSDK||null;
-if(!CoinbaseWalletSDK){ showToast('请引入 Coinbase Wallet SDK'); return;}
-const coinbaseWallet=new CoinbaseWalletSDK({appName:"My DApp", darkMode:false});
-provider=coinbaseWallet.makeWeb3Provider(chains.Ethereum.rpc,1);
-web3=new Web3(provider);
-accounts=await provider.request({ method: 'eth_requestAccounts' });
-connectedWallet='Coinbase'; signLoginBtn.disabled=false; loginCard.classList.add('hide'); successCard.classList.remove('hide'); refreshWalletData();
-showToast('Coinbase Wallet 已连接');
-provider.on("accountsChanged",(accs)=>{accounts=accs; refreshWalletData();});
-provider.on("chainChanged",()=>refreshWalletData());
-provider.on("disconnect",()=>{accounts=[]; connectedWallet=''; loginCard.classList.remove('hide'); successCard.classList.add('hide'); showToast('Coinbase Wallet 已断开');});
-}catch(e){console.error(e); showToast('Coinbase Wallet 连接失败');}
-}
-connectCoinbaseBtn.onclick=connectCoinbase;
-
-// ==== 签名登录 ====
-signLoginBtn.onclick=async ()=>{
-if(!accounts[0]) return showToast('请先连接钱包');
-try{const msg=`登录验证 ${new Date().toLocaleString()}`; const sig=await web3.eth.personal.sign(msg,accounts[0]); showToast('签名成功！'); loginStatusSuccess.innerText="已登录 (签名验证成功)";}catch(e){console.error(e);showToast('签名失败');}
-};
-
-// ==== ETH/USD价格 ====
-async function updateETHPrice(){
-try{
-const res=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-const data=await res.json(); ethPriceEl.innerText=`ETH价格: $${data.ethereum.usd}`;
-}catch(e){ethPriceEl.innerText="ETH价格: --"; console.error(e);}
-}
-setInterval(updateETHPrice,30000);
-updateETHPrice();
-
-// ==== ERC20余额 ====
-const ERC20_ABI=[{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"type":"function"}];
-async function updateTokenBalances(){
-if(!accounts[0]) return;
-tokenListEl.innerHTML='';
-for(let t of tokens){
-try{
-const tokenContract=new web3.eth.Contract(ERC20_ABI,t.address);
-const bal=await tokenContract.methods.balanceOf(accounts[0]).call();
-const display=(bal/Math.pow(10,t.decimals)).toFixed(4);
-const li=document.createElement('li'); li.innerText=`${t.symbol}: ${display}`; tokenListEl.appendChild(li);
-}catch(e){console.error(e);}
-}
-}
-setInterval(updateTokenBalances,15000);
-
-// ==== 最近交易列表 ====
-const ETHERSCAN_API_KEY='YOUR_ETHERSCAN_KEY';
-async function updateTxList(){
-if(!accounts[0]) return;
-try{
-const res=await fetch(`https://api.etherscan.io/api?module=account&action=txlist&address=${accounts[0]}&sort=desc&apikey=${ETHERSCAN_API_KEY}`);
-const data=await res.json();
-txListEl.innerHTML='';
-if(data.result){
-data.result.slice(0,5).forEach(tx=>{
-const li=document.createElement('li');
-li.innerText=`${tx.from===accounts[0]?'➡️':'⬅️'} ${shortAddress(tx.to)} | ${web3.utils.fromWei(tx.value,'ether')} ETH`;
-txListEl.appendChild(li);
-});
-}
-}catch(e){console.error(e);}
-}
-setInterval(updateTxList,30000);
-
-// ==== 刷新钱包数据 ====
-async function refreshWalletData(){
-if(accounts[0]){
-await updateWalletInfo(accounts[0],connectedWallet);
-updateTokenBalances();
-updateTxList();
-updateETHPrice();
-}
-}
-</script>
+  <script src="app.js"></script>
 </body>
 </html>
