@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DApp 主页 v0.28</title>
+<title>DApp 主页 v0.29</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -12,7 +12,7 @@
         flex-direction: column;
         height: 100vh;
         background-color: #f0f2f5;
-        transition: background-color 0.4s ease;
+        transition: background-color 0.6s ease, color 0.4s ease; /* 增加平滑过渡 */
     }
     .content {
         flex: 1;
@@ -26,6 +26,7 @@
     .content h2 {
         color: #333;
         margin-bottom: 10px;
+        transition: color 0.4s ease;
     }
     .wallet-address {
         font-weight: bold;
