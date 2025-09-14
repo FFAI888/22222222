@@ -1,46 +1,71 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>简单 DApp 示例 +0.01</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DApp 登录页面 v0.02</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .login-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+        }
+        .wallet-address {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-  <!-- 登录页 -->
-  <div id="loginPage" class="page">
-    <h1>连接钱包</h1>
-    <button id="connectWalletBtn">连接钱包</button>
-    <p id="walletAddress"></p>
-    <button id="goToConfirmBtn" disabled>下一步: 确认关系</button>
-  </div>
-
-  <!-- 确认关系页 -->
-  <div id="confirmPage" class="page" style="display:none">
-    <h1>确认关系</h1>
-    <p>示例关系确认</p>
-    <button id="goToHomeBtn">进入主页</button>
-  </div>
-
-  <!-- 主页 -->
-  <div id="homePage" class="page" style="display:none">
-    <h1>主页</h1>
-    <p>欢迎使用 DApp 示例！</p>
-    <div class="bottom-nav">
-      <button class="nav-btn" data-page="homeTab">首页</button>
-      <button class="nav-btn" data-page="groupTab">拼团</button>
-      <button class="nav-btn" data-page="earnTab">赚币</button>
-      <button class="nav-btn" data-page="tradeTab">交易</button>
+    <div class="login-container">
+        <h2>欢迎使用 DApp</h2>
+        <button id="connectWalletBtn">连接钱包</button>
+        <div class="wallet-address" id="walletAddress"></div>
     </div>
-    <div id="tabContent">
-      <div id="homeTab">这是首页内容</div>
-      <div id="groupTab" style="display:none">这是拼团内容</div>
-      <div id="earnTab" style="display:none">这是赚币内容</div>
-      <div id="tradeTab" style="display:none">这是交易内容</div>
-    </div>
-  </div>
 
-  <script src="app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <script>
+        const connectWalletBtn = document.getElementById('connectWalletBtn');
+        const walletAddressDiv = document.getElementById('walletAddress');
+
+        connectWalletBtn.addEventListener('click', async () => {
+            if (window.ethereum) {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const account = accounts[0];
+                    walletAddressDiv.innerText = "已连接钱包: " + account;
+                    console.log("连接成功:", account);
+                    // 连接成功后跳转到确认关系页面，并传递钱包地址
+                    window.location.href = `confirm.html?account=${account}`;
+                } catch (error) {
+                    console.error("连接钱包失败:", error);
+                    walletAddressDiv.innerText = "连接失败，请重试";
+                }
+            } else {
+                alert("请安装 MetaMask 或其他兼容钱包！");
+            }
+        });
+    </script>
 </body>
 </html>
