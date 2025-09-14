@@ -3,81 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DApp跨钱包登录 v0.03</title>
+    <title>DApp自动登录 v0.05</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
         button { padding: 10px 20px; font-size: 16px; margin: 5px; }
-        #walletAddress { margin-top: 20px; word-break: break-all; }
+        #walletAddress, #loginStatus { margin-top: 20px; word-break: break-all; }
     </style>
 </head>
 <body>
-    <h1>DApp 钱包登录</h1>
+    <h1>DApp 钱包登录（v0.05）</h1>
     <button id="connectMetaMaskBtn">连接 MetaMask</button>
     <button id="connectWalletConnectBtn">使用 WalletConnect</button>
-    <p id="walletAddress">钱包未连接</p>
+    <button id="signLoginBtn" disabled>签名登录</button>
 
-    <!-- 引入 WalletConnect -->
+    <p id="walletAddress">钱包未连接</p>
+    <p id="loginStatus">未登录</p>
+
+    <!-- WalletConnect & Web3 -->
     <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
 
     <script>
+        let web3;
+        let accounts;
+        let provider;
+        let connectedWallet = '';
+
         const walletAddress = document.getElementById('walletAddress');
+        const loginStatus = document.getElementById('loginStatus');
         const connectMetaMaskBtn = document.getElementById('connectMetaMaskBtn');
         const connectWalletConnectBtn = document.getElementById('connectWalletConnectBtn');
+        const signLoginBtn = document.getElementById('signLoginBtn');
 
         // --- MetaMask 连接 ---
-        async function connectMetaMask() {
+        async function connectMetaMask(auto=false) {
             if (typeof window.ethereum !== 'undefined') {
                 try {
-                    connectMetaMaskBtn.innerText = '连接中...';
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    web3 = new Web3(window.ethereum);
                     walletAddress.innerText = '已连接钱包地址: ' + accounts[0];
+                    connectedWallet = 'MetaMask';
                     connectMetaMaskBtn.innerText = '钱包已连接';
                     connectMetaMaskBtn.disabled = true;
+                    signLoginBtn.disabled = false;
+
+                    if (auto) {
+                        loginStatus.innerText = '自动登录';
+                    }
+
+                    localStorage.setItem('connectedWallet', 'MetaMask');
+                    localStorage.setItem('walletAddress', accounts[0]);
                 } catch (err) {
                     console.error(err);
-                    walletAddress.innerText = 'MetaMask连接失败';
-                    connectMetaMaskBtn.innerText = '连接 MetaMask';
+                    if (!auto) walletAddress.innerText = 'MetaMask连接失败';
                 }
             } else {
                 walletAddress.innerText = '未检测到 MetaMask，请安装钱包';
             }
         }
 
-        connectMetaMaskBtn.addEventListener('click', connectMetaMask);
+        connectMetaMaskBtn.addEventListener('click', () => connectMetaMask());
 
         // --- WalletConnect 连接 ---
-        async function connectWalletConnect() {
+        async function connectWalletConnect(auto=false) {
             try {
                 connectWalletConnectBtn.innerText = '连接中...';
-
-                const provider = new WalletConnectProvider.default({
-                    infuraId: "1c83e5c1f41e4c1fb07ff9c9c7b74e7b" // 你可以注册自己的 Infura Key
-                });
-
+                provider = new WalletConnectProvider.default({ infuraId: "1c83e5c1f41e4c1fb07ff9c9c7b74e7b" });
                 await provider.enable();
-
-                const web3 = new Web3(provider);
-                const accounts = await web3.eth.getAccounts();
+                web3 = new Web3(provider);
+                accounts = await web3.eth.getAccounts();
                 walletAddress.innerText = '已连接钱包地址: ' + accounts[0];
+                connectedWallet = 'WalletConnect';
                 connectWalletConnectBtn.innerText = '钱包已连接';
                 connectWalletConnectBtn.disabled = true;
+                signLoginBtn.disabled = false;
 
-                // 监听断开事件
                 provider.on("disconnect", (code, reason) => {
                     walletAddress.innerText = '钱包未连接';
+                    loginStatus.innerText = '未登录';
+                    signLoginBtn.disabled = true;
                     connectWalletConnectBtn.innerText = '使用 WalletConnect';
                     connectWalletConnectBtn.disabled = false;
+                    localStorage.removeItem('connectedWallet');
+                    localStorage.removeItem('walletAddress');
                 });
+
+                localStorage.setItem('connectedWallet', 'WalletConnect');
+                localStorage.setItem('walletAddress', accounts[0]);
+                if (auto) loginStatus.innerText = '自动登录';
 
             } catch (err) {
                 console.error(err);
-                walletAddress.innerText = 'WalletConnect 连接失败';
+                walletAddress.innerText = 'WalletConnect连接失败';
                 connectWalletConnectBtn.innerText = '使用 WalletConnect';
             }
         }
 
-        connectWalletConnectBtn.addEventListener('click', connectWalletConnect);
+        connectWalletConnectBtn.addEventListener('click', () => connectWalletConnect());
+
+        // --- 签名登录 ---
+        async function signLogin() {
+            if (!accounts || accounts.length === 0) return;
+            const address = accounts[0];
+            const nonce = "登录验证随机数：" + Math.floor(Math.random()*1000000);
+            try {
+                const signature = await web3.eth.personal.sign(nonce, address);
+                loginStatus.innerText = '签名成功，已登录';
+                console.log('钱包地址:', address);
+                console.log('签名:', signature);
+                console.log('nonce:', nonce);
+
+                localStorage.setItem('walletSigned', 'true');
+            } catch (err) {
+                console.error(err);
+                loginStatus.innerText = '签名登录失败';
+            }
+        }
+
+        signLoginBtn.addEventListener('click', signLogin);
+
+        // --- 自动检查登录 ---
+        window.addEventListener('load', async () => {
+            const savedWallet = localStorage.getItem('connectedWallet');
+            const savedAddress = localStorage.getItem('walletAddress');
+            const walletSigned = localStorage.getItem('walletSigned');
+
+            if (savedWallet && savedAddress) {
+                if (savedWallet === 'MetaMask') {
+                    await connectMetaMask(true);
+                } else if (savedWallet === 'WalletConnect') {
+                    await connectWalletConnect(true);
+                }
+
+                if (walletSigned === 'true') {
+                    loginStatus.innerText = '已登录';
+                }
+            }
+        });
     </script>
 </body>
 </html>
