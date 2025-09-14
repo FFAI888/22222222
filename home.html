@@ -3,27 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DApp 主页 v0.34</title>
+<title>DApp 主页 v0.35</title>
 <style>
 :root{
     --topbar-height:56px;
     --nav-height:70px;
 }
 html,body{margin:0;padding:0;height:100%;font-family:Arial,sans-serif;display:flex;flex-direction:column;}
-body{
-    background-color:#f0f2f5;
-    transition: background-color 0.6s ease,color 0.4s ease;
-}
+body{background-color:#f0f2f5;transition: background-color 0.6s ease,color 0.4s ease;}
 
 /* 顶部条 */
 .topbar{
     position:fixed;top:0;left:0;right:0;height:var(--topbar-height);
-    display:flex;align-items:center;gap:12px;padding:0 14px;
-    background:rgba(255,255,255,0.6);backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:space-between;padding:0 14px;
+    background:rgba(255,255,255,0.7);backdrop-filter:blur(6px);
     border-bottom:1px solid rgba(0,0,0,0.06);z-index:30;
 }
-.logo-wrap{
-    display:flex;align-items:center;gap:10px;cursor:pointer;
+.left-wrap{
+    display:flex;align-items:center;gap:10px;
 }
 .logo-bg{
     width:44px;height:44px;
@@ -32,14 +29,19 @@ body{
     display:flex;justify-content:center;align-items:center;
     overflow:hidden;
 }
-.logo-img{
-    width:100%;height:100%;object-fit:cover;border-radius:12px;
-}
-.title-wrap{
-    display:flex;flex-direction:column;justify-content:center;align-items:center;
-}
+.logo-img{width:100%;height:100%;object-fit:cover;border-radius:12px;}
+.title-wrap{display:flex;flex-direction:column;justify-content:center;align-items:center;}
 .app-title{font-size:18px;font-weight:600;color:#222;margin:0;letter-spacing:5px;}
 .logo-subtext{font-size:12px;color:#666;margin:0;}
+
+/* 右上钱包地址 */
+.wallet-top{
+    max-width:200px; /* 可以根据需要调整 */
+    text-align:left;
+    font-size:12px;color:#333;word-break:break-all;
+    overflow:hidden;
+    white-space:pre-wrap;
+}
 
 /* 主体 */
 .main-wrap{flex:1;display:flex;flex-direction:column;padding-top:calc(var(--topbar-height)+10px);padding-bottom:calc(var(--nav-height)+10px);box-sizing:border-box;}
@@ -80,16 +82,16 @@ body{
 
 <!-- 顶部 -->
 <div class="topbar">
-    <div class="logo-wrap">
+    <div class="left-wrap">
         <div class="logo-bg">
-            <img class="logo-img" id="logoImg" src="https://img.icons8.com/fluency/96/000000/blockchain.png" alt="logo">
+            <img class="logo-img" src="你上传的图片URL" alt="logo">
         </div>
-        <input type="file" id="logoInput" accept="image/*" style="display:none;">
+        <div class="title-wrap">
+            <div class="app-title">融 链</div>
+            <div class="logo-subtext">RongChain</div>
+        </div>
     </div>
-    <div class="title-wrap">
-        <div class="app-title">融 链</div>
-        <div class="logo-subtext">RongChain</div>
-    </div>
+    <div class="wallet-top" id="walletTop"></div>
 </div>
 
 <!-- 主体 -->
@@ -113,7 +115,8 @@ body{
 /* 钱包地址显示 */
 const urlParams = new URLSearchParams(window.location.search);
 const account = urlParams.get('account');
-document.getElementById('walletAddress').innerText = account?"已连接钱包: "+account:"未获取到钱包地址";
+const walletTop=document.getElementById('walletTop');
+walletTop.innerText = account ? account : "未连接钱包";
 
 /* 主体 & 导航 */
 const mainContent=document.getElementById('mainContent');
@@ -173,26 +176,6 @@ profileBtn.addEventListener('click',e=>{
 });
 
 document.addEventListener('DOMContentLoaded',()=>{setActive(homeBtn);updateContent('欢迎来到 DApp 主页！');});
-
-/* Logo 上传 + localStorage + 自动缩放圆角 */
-const logoInput=document.getElementById('logoInput');
-const logoImg=document.getElementById('logoImg');
-try{
-    const savedLogo = localStorage.getItem('customLogoDataUrl');
-    if(savedLogo) logoImg.src = savedLogo;
-}catch(e){console.warn(e);}
-logoImg.parentElement.addEventListener('click',()=> logoInput.click());
-logoInput.addEventListener('change',(ev)=>{
-    const file = ev.target.files[0];
-    if(!file || !file.type.startsWith('image/')){alert('请选择图片文件');return;}
-    const reader = new FileReader();
-    reader.onload=function(evt){
-        const dataUrl=evt.target.result;
-        logoImg.src = dataUrl;
-        try{localStorage.setItem('customLogoDataUrl',dataUrl);}catch(e){console.warn(e);}
-    }
-    reader.readAsDataURL(file);
-});
 </script>
 
 </body>
