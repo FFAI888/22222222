@@ -3,30 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>连接钱包登录页面 v0.01</title>
+    <title>移动端DApp钱包登录 v0.02</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
+        button { padding: 10px 20px; font-size: 16px; }
+        #walletAddress { margin-top: 20px; word-break: break-all; }
+    </style>
 </head>
 <body>
-    <h1>欢迎使用钱包登录</h1>
+    <h1>DApp 钱包登录</h1>
     <button id="connectWalletBtn">连接钱包</button>
-    <p id="walletAddress">钱包地址未连接</p>
+    <p id="walletAddress">钱包未连接</p>
 
     <script>
         const connectWalletBtn = document.getElementById('connectWalletBtn');
         const walletAddress = document.getElementById('walletAddress');
 
-        connectWalletBtn.addEventListener('click', async () => {
-            // 检查是否安装了 MetaMask
+        async function connectWallet() {
             if (typeof window.ethereum !== 'undefined') {
                 try {
-                    // 请求连接钱包
+                    connectWalletBtn.innerText = '连接中...';
                     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     walletAddress.innerText = '已连接钱包地址: ' + accounts[0];
-                } catch (error) {
-                    console.error(error);
+                    connectWalletBtn.innerText = '钱包已连接';
+                    connectWalletBtn.disabled = true; // 已连接禁用按钮
+                } catch (err) {
+                    console.error(err);
                     walletAddress.innerText = '连接失败，请重试';
+                    connectWalletBtn.innerText = '连接钱包';
                 }
             } else {
-                walletAddress.innerText = '未检测到 MetaMask，请安装钱包';
+                walletAddress.innerHTML = '未检测到钱包，请安装 MetaMask 或使用 WalletConnect';
+            }
+        }
+
+        connectWalletBtn.addEventListener('click', connectWallet);
+
+        // 如果页面在 App 内浏览器，可以直接提示
+        window.addEventListener('load', () => {
+            if (/mobile/i.test(navigator.userAgent)) {
+                console.log('移动端或App内浏览器访问');
             }
         });
     </script>
