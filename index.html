@@ -3,21 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DApp自动登录 v0.05</title>
+    <title>DApp登录页 v0.07</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        button { padding: 10px 20px; font-size: 16px; margin: 5px; }
-        #walletAddress, #loginStatus { margin-top: 20px; word-break: break-all; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(to bottom, #f0f4f8, #d9e2ec);
+            min-height: 100vh;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        button {
+            padding: 15px 25px;
+            font-size: 18px;
+            margin: 10px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+        }
+        button img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        #connectMetaMaskBtn { background-color: #f6851b; color: white; }
+        #connectMetaMaskBtn:hover { background-color: #e2761b; }
+        #connectWalletConnectBtn { background-color: #3b99fc; color: white; }
+        #connectWalletConnectBtn:hover { background-color: #2a82f5; }
+        #signLoginBtn { background-color: #28a745; color: white; }
+        #signLoginBtn:hover { background-color: #218838; }
+        #walletAddress, #loginStatus {
+            margin-top: 20px;
+            font-size: 16px;
+            word-break: break-all;
+        }
+        /* Toast 提示样式 */
+        #toast {
+            visibility: hidden;
+            min-width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 10px;
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            font-size: 14px;
+        }
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein { from {bottom: 20px; opacity: 0;} to {bottom: 50px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 50px; opacity: 1;} to {bottom: 20px; opacity: 0;} }
     </style>
 </head>
 <body>
-    <h1>DApp 钱包登录（v0.05）</h1>
-    <button id="connectMetaMaskBtn">连接 MetaMask</button>
-    <button id="connectWalletConnectBtn">使用 WalletConnect</button>
+    <h1>DApp 钱包登录</h1>
+    <button id="connectMetaMaskBtn"><img src="https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg">连接 MetaMask</button>
+    <button id="connectWalletConnectBtn"><img src="https://walletconnect.org/walletconnect-logo.svg">使用 WalletConnect</button>
     <button id="signLoginBtn" disabled>签名登录</button>
 
     <p id="walletAddress">钱包未连接</p>
     <p id="loginStatus">未登录</p>
+
+    <div id="toast"></div>
 
     <!-- WalletConnect & Web3 -->
     <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
@@ -34,6 +97,13 @@
         const connectMetaMaskBtn = document.getElementById('connectMetaMaskBtn');
         const connectWalletConnectBtn = document.getElementById('connectWalletConnectBtn');
         const signLoginBtn = document.getElementById('signLoginBtn');
+        const toast = document.getElementById('toast');
+
+        function showToast(message) {
+            toast.innerText = message;
+            toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show",""); }, 3000);
+        }
 
         // --- MetaMask 连接 ---
         async function connectMetaMask(auto=false) {
@@ -43,22 +113,18 @@
                     web3 = new Web3(window.ethereum);
                     walletAddress.innerText = '已连接钱包地址: ' + accounts[0];
                     connectedWallet = 'MetaMask';
-                    connectMetaMaskBtn.innerText = '钱包已连接';
                     connectMetaMaskBtn.disabled = true;
                     signLoginBtn.disabled = false;
-
-                    if (auto) {
-                        loginStatus.innerText = '自动登录';
-                    }
-
+                    if (auto) loginStatus.innerText = '自动登录';
+                    showToast('MetaMask连接成功');
                     localStorage.setItem('connectedWallet', 'MetaMask');
                     localStorage.setItem('walletAddress', accounts[0]);
                 } catch (err) {
                     console.error(err);
-                    if (!auto) walletAddress.innerText = 'MetaMask连接失败';
+                    if (!auto) showToast('MetaMask连接失败');
                 }
             } else {
-                walletAddress.innerText = '未检测到 MetaMask，请安装钱包';
+                showToast('未检测到 MetaMask');
             }
         }
 
@@ -67,41 +133,38 @@
         // --- WalletConnect 连接 ---
         async function connectWalletConnect(auto=false) {
             try {
-                connectWalletConnectBtn.innerText = '连接中...';
                 provider = new WalletConnectProvider.default({ infuraId: "1c83e5c1f41e4c1fb07ff9c9c7b74e7b" });
                 await provider.enable();
                 web3 = new Web3(provider);
                 accounts = await web3.eth.getAccounts();
                 walletAddress.innerText = '已连接钱包地址: ' + accounts[0];
                 connectedWallet = 'WalletConnect';
-                connectWalletConnectBtn.innerText = '钱包已连接';
                 connectWalletConnectBtn.disabled = true;
                 signLoginBtn.disabled = false;
-
-                provider.on("disconnect", (code, reason) => {
-                    walletAddress.innerText = '钱包未连接';
-                    loginStatus.innerText = '未登录';
-                    signLoginBtn.disabled = true;
-                    connectWalletConnectBtn.innerText = '使用 WalletConnect';
-                    connectWalletConnectBtn.disabled = false;
-                    localStorage.removeItem('connectedWallet');
-                    localStorage.removeItem('walletAddress');
-                });
-
+                showToast('WalletConnect连接成功');
                 localStorage.setItem('connectedWallet', 'WalletConnect');
                 localStorage.setItem('walletAddress', accounts[0]);
                 if (auto) loginStatus.innerText = '自动登录';
 
+                provider.on("disconnect", () => {
+                    walletAddress.innerText = '钱包未连接';
+                    loginStatus.innerText = '未登录';
+                    signLoginBtn.disabled = true;
+                    connectWalletConnectBtn.disabled = false;
+                    localStorage.removeItem('connectedWallet');
+                    localStorage.removeItem('walletAddress');
+                    showToast('钱包已断开');
+                });
+
             } catch (err) {
                 console.error(err);
-                walletAddress.innerText = 'WalletConnect连接失败';
-                connectWalletConnectBtn.innerText = '使用 WalletConnect';
+                showToast('WalletConnect连接失败');
             }
         }
 
         connectWalletConnectBtn.addEventListener('click', () => connectWalletConnect());
 
-        // --- 签名登录 ---
+        // --- 签名登录 + 发送到示例服务器 ---
         async function signLogin() {
             if (!accounts || accounts.length === 0) return;
             const address = accounts[0];
@@ -109,14 +172,21 @@
             try {
                 const signature = await web3.eth.personal.sign(nonce, address);
                 loginStatus.innerText = '签名成功，已登录';
-                console.log('钱包地址:', address);
-                console.log('签名:', signature);
-                console.log('nonce:', nonce);
-
                 localStorage.setItem('walletSigned', 'true');
+                showToast('签名登录成功');
+
+                // 模拟发送到服务器验证
+                const response = await fetch('https://example.com/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ address, signature, nonce })
+                });
+                console.log('服务器验证返回:', response.status);
+
             } catch (err) {
                 console.error(err);
                 loginStatus.innerText = '签名登录失败';
+                showToast('签名登录失败');
             }
         }
 
@@ -135,9 +205,7 @@
                     await connectWalletConnect(true);
                 }
 
-                if (walletSigned === 'true') {
-                    loginStatus.innerText = '已登录';
-                }
+                if (walletSigned === 'true') loginStatus.innerText = '已登录';
             }
         });
     </script>
