@@ -1,143 +1,96 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DApp 主页 v0.12</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        background-color: #f0f2f5;
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-    }
-    .content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        padding: 20px;
-    }
-    .content h2 {
-        color: #333;
-        margin-bottom: 10px;
-    }
-    .wallet-address {
-        font-weight: bold;
-        color: #4CAF50;
-    }
-    .bottom-nav {
-        display: flex;
-        justify-content: space-around;
-        background-color: #fff;
-        border-top: 1px solid #ccc;
-        padding: 10px 0;
-        height: 90px;
-    }
-    .bottom-nav button {
-        flex: 1;
-        background: none;
-        border: none;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 5px 0;
-        font-size: 16px;
-        color: #888;
-        border-radius: 12px;
-        transition: transform 0.2s, color 0.3s, background 0.5s;
-    }
-    .bottom-nav button img {
-        width: 30px;
-        height: 30px;
-        margin-bottom: 4px;
-        transition: filter 0.3s, transform 0.3s;
-        filter: grayscale(100%);
-    }
-    .bottom-nav button.active {
-        color: #fff;
-        background: linear-gradient(135deg, #4CAF50, #81C784);
-        animation: gradientMove 3s linear infinite;
-    }
-    .bottom-nav button.active img {
-        filter: grayscale(0%) brightness(1.2);
-        transform: scale(1.1);
-    }
-    .bottom-nav button:hover {
-        transform: scale(1.05);
-    }
-    .bottom-nav button:active {
-        transform: scale(1.15);
-    }
-
-    /* 渐变流动动画 */
-    @keyframes gradientMove {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-    .bottom-nav button.active {
-        background-size: 200% 200%;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DApp 登录页面 v0.05</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .login-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        #metaMaskBtn { background-color: #4CAF50; color: white; }
+        #walletConnectBtn { background-color: #2196F3; color: white; }
+        .wallet-address {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
+    <div class="login-container">
+        <h2>欢迎使用 DApp</h2>
+        <button id="metaMaskBtn">连接 MetaMask</button>
+        <button id="walletConnectBtn">WalletConnect</button>
+        <div class="wallet-address" id="walletAddress"></div>
+    </div>
 
-<div class="content">
-    <h2>欢迎来到 DApp 主页！</h2>
-    <div class="wallet-address" id="walletAddress">加载钱包地址...</div>
-</div>
+    <!-- web3.js -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <!-- walletconnect -->
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
 
-<div class="bottom-nav">
-    <button id="homeBtn" class="active">
-        <img src="https://img.icons8.com/fluency/48/000000/home.png" alt="首页">
-        首页
-    </button>
-    <button id="groupBtn">
-        <img src="https://img.icons8.com/fluency/48/000000/conference.png" alt="拼团">
-        拼团
-    </button>
-    <button id="earnBtn">
-        <img src="https://img.icons8.com/fluency/48/000000/coin-in-hand.png" alt="赚币">
-        赚币
-    </button>
-    <button id="swapBtn">
-        <img src="https://img.icons8.com/fluency/48/000000/exchange.png" alt="兑换">
-        兑换
-    </button>
-</div>
+    <script>
+        const walletAddressDiv = document.getElementById('walletAddress');
 
-<script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const account = urlParams.get('account');
-    const walletAddressDiv = document.getElementById('walletAddress');
-    walletAddressDiv.innerText = account ? "已连接钱包: " + account : "未获取到钱包地址";
+        // MetaMask 连接
+        document.getElementById('metaMaskBtn').addEventListener('click', async () => {
+            if(window.ethereum){
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const account = accounts[0];
+                    walletAddressDiv.innerText = "已连接钱包: " + account;
+                    // 跳转到确认关系页面
+                    window.location.href = `confirm.html?account=${account}`;
+                } catch(e) {
+                    walletAddressDiv.innerText = "连接失败，请重试";
+                    console.error(e);
+                }
+            } else {
+                alert("请安装 MetaMask 钱包！");
+            }
+        });
 
-    const homeBtn = document.getElementById('homeBtn');
-    const groupBtn = document.getElementById('groupBtn');
-    const earnBtn = document.getElementById('earnBtn');
-    const swapBtn = document.getElementById('swapBtn');
-    const contentDiv = document.querySelector('.content');
-
-    function setActive(button){
-        [homeBtn, groupBtn, earnBtn, swapBtn].forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-    }
-
-    function updateContent(title){
-        contentDiv.innerHTML = `<h2>${title}</h2><div class="wallet-address">${account ? "已连接钱包: " + account : "未获取到钱包地址"}</div>`;
-    }
-
-    homeBtn.addEventListener('click', () => { setActive(homeBtn); updateContent("欢迎来到 DApp 主页！"); });
-    groupBtn.addEventListener('click', () => { setActive(groupBtn); updateContent("这里是拼团页面（占位）"); });
-    earnBtn.addEventListener('click', () => { setActive(earnBtn); updateContent("这里是赚币页面（占位）"); });
-    swapBtn.addEventListener('click', () => { setActive(swapBtn); updateContent("这里是兑换页面（占位）"); });
-</script>
-
+        // WalletConnect 连接
+        document.getElementById('walletConnectBtn').addEventListener('click', async () => {
+            const provider = new WalletConnectProvider.default({
+                rpc: {
+                    1: "https://mainnet.infura.io/v3/你的InfuraID"  // 用你自己的Infura ID
+                },
+            });
+            try {
+                await provider.enable();
+                const web3 = new Web3(provider);
+                const accounts = await web3.eth.getAccounts();
+                const account = accounts[0];
+                walletAddressDiv.innerText = "已连接钱包: " + account;
+                window.location.href = `confirm.html?account=${account}`;
+            } catch(e) {
+                walletAddressDiv.innerText = "WalletConnect 连接失败";
+                console.error(e);
+            }
+        });
+    </script>
 </body>
 </html>
