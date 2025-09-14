@@ -3,88 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DApp登录页 v0.12</title>
+<title>DApp 登录页 v0.16</title>
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg,#a1c4fd,#c2e9fb);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    margin:0;
-}
-.card {
-    background:#fff;
-    border-radius:20px;
-    padding:30px 20px;
-    max-width:400px;
-    width:90%;
-    text-align:center;
-    box-shadow:0 15px 40px rgba(0,0,0,0.2);
-    transition: transform 0.4s ease, opacity 0.4s ease;
-    animation: fadeIn 1s ease-out;
-    position: relative;
-}
+body { font-family: Arial, sans-serif; background: linear-gradient(135deg,#a1c4fd,#c2e9fb); display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
+.card { background:#fff; border-radius:20px; padding:30px 20px; max-width:400px; width:90%; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.2); transition: transform 0.4s ease, opacity 0.4s ease, background 0.4s ease; animation: fadeIn 1s ease-out; position: relative; }
 .card.hide { opacity:0; transform:translateY(-30px); pointer-events:none; }
+.card.flash { background:#d4edda; }
 h1 { color:#333; margin-bottom:25px; }
-
-button {
-    width:100%;
-    padding:15px;
-    font-size:18px;
-    margin:10px 0;
-    border:none;
-    border-radius:12px;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition: all 0.25s ease;
-    color:#fff;
-    font-weight:bold;
-    background-size:200% 200%;
-}
+button { width:100%; padding:15px; font-size:18px; margin:10px 0; border:none; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: all 0.25s ease; color:#fff; font-weight:bold; background-size:200% 200%; }
 button img { width:24px; height:24px; margin-right:10px; }
 button:disabled { opacity:0.6; cursor:not-allowed; }
-
-/* 渐变按钮 */
 #connectMetaMaskBtn { background-image: linear-gradient(45deg,#f6851b,#e2761b); }
 #connectMetaMaskBtn:hover { background-position:right center; transform:scale(1.05); }
 #connectWalletConnectBtn { background-image: linear-gradient(45deg,#3b99fc,#2a82f5); }
 #connectWalletConnectBtn:hover { background-position:right center; transform:scale(1.05); }
+#connectCoinbaseBtn { background-image: linear-gradient(45deg,#0052ff,#00bfff); }
+#connectCoinbaseBtn:hover { background-position:right center; transform:scale(1.05); }
 #signLoginBtn { background-image: linear-gradient(45deg,#28a745,#218838); }
 #signLoginBtn:hover { background-position:right center; transform:scale(1.05); }
-
-#walletInfo {
-    margin-top:20px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:16px;
-    background:#f0f4f8;
-    border-radius:12px;
-    padding:10px 15px;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-    transition: background 0.3s;
-}
-#walletInfo img { width:36px; height:36px; margin-right:10px; border-radius:50%; border:1px solid #ccc; }
-#walletInfo:hover { background:#e2ebf5; }
-
-#loginStatus { margin-top:15px; font-size:16px; font-weight:bold; }
+#walletInfo, #walletInfoSuccess { margin-top:20px; display:flex; align-items:center; justify-content:center; font-size:16px; background:#f0f4f8; border-radius:12px; padding:10px 15px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); transition: background 0.3s; }
+#walletInfo img, #walletInfoSuccess img { width:36px; height:36px; margin-right:10px; border-radius:50%; border:1px solid #ccc; }
+#walletInfo:hover, #walletInfoSuccess:hover { background:#e2ebf5; }
+#loginStatus, #loginStatusSuccess, #balance, #ethPrice { margin-top:15px; font-size:16px; font-weight:bold; }
 #toast { visibility:hidden; min-width:200px; background:#333; color:#fff; text-align:center; border-radius:8px; padding:10px; position:fixed; bottom:50px; left:50%; transform:translateX(-50%); z-index:100; font-size:14px; }
 #toast.show { visibility:visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-
+#copyBtn { margin-left:10px; padding:5px 10px; font-size:14px; border:none; border-radius:8px; cursor:pointer; background:#007bff; color:#fff; transition: all 0.25s ease; }
+#copyBtn:hover { background:#0056b3; transform:scale(1.05); }
 @keyframes fadein { from{bottom:20px;opacity:0;} to{bottom:50px;opacity:1;} }
 @keyframes fadeout { from{bottom:50px;opacity:1;} to{bottom:20px;opacity:0;} }
 @keyframes fadeIn { from{opacity:0; transform:translateY(-20px);} to{opacity:1; transform:translateY(0);} }
 </style>
 </head>
 <body>
+
 <div class="card" id="loginCard">
 <h1>DApp 登录</h1>
 <button id="connectMetaMaskBtn"><img src="https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg">连接 MetaMask</button>
 <button id="connectWalletConnectBtn"><img src="https://walletconnect.org/walletconnect-logo.svg">使用 WalletConnect</button>
+<button id="connectCoinbaseBtn"><img src="https://avatars.githubusercontent.com/u/18060234?s=200&v=4">使用 Coinbase Wallet</button>
 <button id="signLoginBtn" disabled>签名登录</button>
 
 <div id="walletInfo">
@@ -93,14 +49,30 @@ button:disabled { opacity:0.6; cursor:not-allowed; }
 </div>
 <p id="loginStatus">未登录</p>
 </div>
+
 <div class="card hide" id="successCard">
 <h1>登录成功</h1>
 <div id="walletInfoSuccess">
     <img id="walletAvatarSuccess" src="https://via.placeholder.com/36" alt="钱包图标">
     <span id="walletAddressSuccess">地址/ENS</span>
+    <button id="copyBtn">复制地址</button>
 </div>
+<p id="balance">余额: 0 ETH</p>
+<p id="ethPrice">ETH价格: --</p>
+
+<div id="tokenList" style="margin-top:15px; text-align:left;">
+    <h3>ERC20 代币余额:</h3>
+    <ul id="tokens"></ul>
+</div>
+
+<div id="txList" style="margin-top:15px; text-align:left;">
+    <h3>最近交易:</h3>
+    <ul id="txs"></ul>
+</div>
+
 <p id="loginStatusSuccess">已登录</p>
 </div>
+
 <div id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
@@ -116,37 +88,119 @@ const loginStatus=document.getElementById('loginStatus');
 const walletAddressSuccess=document.getElementById('walletAddressSuccess');
 const walletAvatarSuccess=document.getElementById('walletAvatarSuccess');
 const loginStatusSuccess=document.getElementById('loginStatusSuccess');
+const balanceEl=document.getElementById('balance');
+const ethPriceEl=document.getElementById('ethPrice');
+const tokenListEl=document.getElementById('tokens');
+const txListEl=document.getElementById('txs');
 const connectMetaMaskBtn=document.getElementById('connectMetaMaskBtn');
 const connectWalletConnectBtn=document.getElementById('connectWalletConnectBtn');
+const connectCoinbaseBtn=document.getElementById('connectCoinbaseBtn');
 const signLoginBtn=document.getElementById('signLoginBtn');
+const copyBtn=document.getElementById('copyBtn');
 const toast=document.getElementById('toast');
 
 function showToast(msg){toast.innerText=msg; toast.className="show"; setTimeout(()=>{toast.className=toast.className.replace("show","");},3000);}
 function shortAddress(addr){return addr.slice(0,6)+"..."+addr.slice(-4);}
 async function getENS(address){ try{ const name=await web3.eth.ens.getName(address); if(name && name.name) return name.name; }catch(e){} return null; }
+async function getBalance(addr){ try{ const bal=await web3.eth.getBalance(addr); return (web3.utils.fromWei(bal,'ether')).slice(0,6); }catch(e){return '0';} }
+
+const tokens = [
+    {symbol:'USDT', address:'0xdAC17F958D2ee523a2206206994597C13D831ec7', decimals:6},
+    {symbol:'USDC', address:'0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', decimals:6},
+    {symbol:'DAI',  address:'0x6B175474E89094C44Da98b954EedeAC495271d0F', decimals:18}
+];
+const ERC20_ABI=[{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"type":"function"}];
+let lastTxCount=0;
 
 async function updateWalletInfo(addr,type){ 
     let ensName=await getENS(addr);
     let displayName=ensName?ensName:shortAddress(addr);
     walletAddressSpan.innerText=displayName;
-    walletAvatar.src=type==='MetaMask'?"https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg":"https://walletconnect.org/walletconnect-logo.svg";
+    walletAvatar.src=type==='MetaMask'?"https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg":
+                        type==='WalletConnect'?"https://walletconnect.org/walletconnect-logo.svg":
+                        "https://avatars.githubusercontent.com/u/18060234?s=200&v=4";
     walletAddressSuccess.innerText=displayName;
     walletAvatarSuccess.src=walletAvatar.src;
+    let bal = await getBalance(addr);
+    balanceEl.innerText=`余额: ${bal} ETH`;
 }
 
+async function updateETHPrice(){
+    try{
+        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+        const data = await res.json();
+        ethPriceEl.innerText = `ETH价格: $${data.ethereum.usd}`;
+    }catch(err){ ethPriceEl.innerText = 'ETH价格: 获取失败'; }
+}
+
+async function updateTokenBalances(){
+    tokenListEl.innerHTML='';
+    for(const token of tokens){
+        try{
+            const contract = new web3.eth.Contract(ERC20_ABI, token.address);
+            const bal = await contract.methods.balanceOf(accounts[0]).call();
+            const formatted = (bal / (10 ** token.decimals)).toFixed(4);
+            const li = document.createElement('li');
+            li.innerText=`${token.symbol}: ${formatted}`;
+            tokenListEl.appendChild(li);
+        }catch(e){console.error(e);}
+    }
+}
+
+async function updateTxList(){
+    txListEl.innerHTML='';
+    const latestBlock = await web3.eth.getBlockNumber();
+    for(let i=0;i<5;i++){
+        try{
+            const block = await web3.eth.getBlock(latestBlock-i,true);
+            if(block && block.transactions){
+                for(const tx of block.transactions){
+                    if(tx.from.toLowerCase()===accounts[0].toLowerCase() || tx.to?.toLowerCase()===accounts[0].toLowerCase()){
+                        const li = document.createElement('li');
+                        const type = tx.from.toLowerCase()===accounts[0].toLowerCase()?'发送':'接收';
+                        const shortHash = tx.hash.slice(0,6)+'...'+tx.hash.slice(-4);
+                        const valueEth = web3.utils.fromWei(tx.value,'ether');
+                        li.innerText=`[${type}] ${valueEth} ETH | ${shortHash}`;
+                        txListEl.appendChild(li);
+                    }
+                }
+            }
+        }catch(e){console.error(e);}
+    }
+}
+
+async function pollTransactions(){
+    if(!accounts || accounts.length===0) return;
+    try{
+        const txCount = await web3.eth.getTransactionCount(accounts[0]);
+        if(txCount > lastTxCount) showToast('检测到新交易！');
+        lastTxCount = txCount;
+    }catch(err){console.error(err);}
+}
+
+async function refreshWalletData(){
+    await updateWalletInfo(accounts[0], connectedWallet);
+    await updateETHPrice();
+    await updateTokenBalances();
+    await updateTxList();
+}
+
+// 连接钱包函数（MetaMask/WalletConnect/Coinbase）
 async function connectMetaMask(auto=false){
     if(typeof window.ethereum!=='undefined'){
         try{
             accounts=await window.ethereum.request({method:'eth_requestAccounts'});
             web3=new Web3(window.ethereum);
             connectedWallet='MetaMask';
-            connectMetaMaskBtn.disabled=true;
-            signLoginBtn.disabled=false;
-            await updateWalletInfo(accounts[0],'MetaMask');
+            connectMetaMaskBtn.disabled=true; signLoginBtn.disabled=false;
+            await refreshWalletData();
             if(auto) loginStatus.innerText='自动登录';
             showToast('MetaMask连接成功');
             localStorage.setItem('connectedWallet','MetaMask');
             localStorage.setItem('walletAddress',accounts[0]);
+            window.ethereum.on('accountsChanged', async (newAccounts)=>{
+                if(newAccounts.length>0){ accounts=newAccounts; await refreshWalletData(); loginStatus.innerText='钱包已切换，未登录'; signLoginBtn.disabled=false; successCard.classList.add('hide'); localStorage.setItem('walletAddress',accounts[0]); localStorage.removeItem('walletSigned'); showToast('钱包已切换'); }
+            });
         }catch(err){console.error(err); if(!auto) showToast('MetaMask连接失败');}
     }else showToast('未检测到 MetaMask');
 }
@@ -159,35 +213,45 @@ async function connectWalletConnect(auto=false){
         web3=new Web3(provider);
         accounts=await web3.eth.getAccounts();
         connectedWallet='WalletConnect';
-        connectWalletConnectBtn.disabled=true;
-        signLoginBtn.disabled=false;
-        await updateWalletInfo(accounts[0],'WalletConnect');
+        connectWalletConnectBtn.disabled=true; signLoginBtn.disabled=false;
+        await refreshWalletData();
+        if(auto) loginStatus.innerText='自动登录';
         showToast('WalletConnect连接成功');
         localStorage.setItem('connectedWallet','WalletConnect');
         localStorage.setItem('walletAddress',accounts[0]);
-        if(auto) loginStatus.innerText='自动登录';
         provider.on("disconnect",()=>{
-            walletAddressSpan.innerText="钱包未连接";
-            walletAvatar.src="https://via.placeholder.com/36";
-            loginStatus.innerText='未登录';
-            signLoginBtn.disabled=true;
-            connectWalletConnectBtn.disabled=false;
-            localStorage.removeItem('connectedWallet');
-            localStorage.removeItem('walletAddress');
+            walletAddressSpan.innerText="钱包未连接"; walletAvatar.src="https://via.placeholder.com/36"; loginStatus.innerText='未登录';
+            signLoginBtn.disabled=true; connectWalletConnectBtn.disabled=false; successCard.classList.add('hide');
+            localStorage.removeItem('connectedWallet'); localStorage.removeItem('walletAddress'); localStorage.removeItem('walletSigned');
             showToast('钱包已断开');
         });
     }catch(err){console.error(err); showToast('WalletConnect连接失败');}
 }
 connectWalletConnectBtn.addEventListener('click',()=>connectWalletConnect());
 
+async function connectCoinbase(){
+    if(window.ethereum && window.ethereum.isCoinbaseWallet){
+        accounts=await window.ethereum.request({method:'eth_requestAccounts'});
+        web3=new Web3(window.ethereum);
+        connectedWallet='Coinbase';
+        connectCoinbaseBtn.disabled=true; signLoginBtn.disabled=false;
+        await refreshWalletData();
+        showToast('Coinbase Wallet连接成功');
+        localStorage.setItem('connectedWallet','Coinbase');
+        localStorage.setItem('walletAddress',accounts[0]);
+    }else showToast('未检测到 Coinbase Wallet');
+}
+connectCoinbaseBtn.addEventListener('click',connectCoinbase);
+
 async function signLogin(){
     if(!accounts || accounts.length===0) return;
-    const address=accounts[0];
-    const nonce="登录验证随机数："+Math.floor(Math.random()*1000000);
+    const address=accounts[0]; const nonce="登录验证随机数："+Math.floor(Math.random()*1000000);
     try{
         const signature=await web3.eth.personal.sign(nonce,address);
+        await refreshWalletData();
         loginStatus.innerText='签名成功，已登录';
         loginStatusSuccess.innerText='已登录';
+        successCard.classList.add('flash'); setTimeout(()=>successCard.classList.remove('flash'),800);
         showCard(successCard);
         localStorage.setItem('walletSigned','true');
         showToast('签名登录成功');
@@ -195,6 +259,11 @@ async function signLogin(){
     }catch(err){console.error(err); loginStatus.innerText='签名登录失败'; showToast('签名登录失败');}
 }
 signLoginBtn.addEventListener('click',signLogin);
+
+copyBtn.addEventListener('click', ()=>{
+    const text = walletAddressSuccess.innerText;
+    navigator.clipboard.writeText(text).then(()=>showToast('地址已复制'));
+});
 
 function showCard(card){ loginCard.classList.add('hide'); successCard.classList.remove('hide'); }
 
@@ -205,9 +274,12 @@ window.addEventListener('load',async()=>{
     if(savedWallet && savedAddress){
         if(savedWallet==='MetaMask') await connectMetaMask(true);
         else if(savedWallet==='WalletConnect') await connectWalletConnect(true);
+        else if(savedWallet==='Coinbase') await connectCoinbase();
         if(walletSigned==='true') showCard(successCard);
     }
+    setInterval(()=>{ updateETHPrice(); pollTransactions(); updateTxList(); },15000);
 });
 </script>
+
 </body>
 </html>
