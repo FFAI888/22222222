@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DApp 主页 v0.35</title>
+<title>DApp 主页 v0.36</title>
 <style>
 :root{
     --topbar-height:56px;
@@ -36,7 +36,7 @@ body{background-color:#f0f2f5;transition: background-color 0.6s ease,color 0.4s 
 
 /* 右上钱包地址 */
 .wallet-top{
-    max-width:200px; /* 可以根据需要调整 */
+    max-width:200px;
     text-align:left;
     font-size:12px;color:#333;word-break:break-all;
     overflow:hidden;
@@ -84,7 +84,7 @@ body{background-color:#f0f2f5;transition: background-color 0.6s ease,color 0.4s 
 <div class="topbar">
     <div class="left-wrap">
         <div class="logo-bg">
-            <img class="logo-img" src="你上传的图片URL" alt="logo">
+            <img class="logo-img" src="https://raw.githubusercontent.com/FFAI888/22222222/main/0E0CB292-E014-42D1-B11B-5B04BCA492F3.jpeg" alt="logo">
         </div>
         <div class="title-wrap">
             <div class="app-title">融 链</div>
@@ -112,11 +112,31 @@ body{background-color:#f0f2f5;transition: background-color 0.6s ease,color 0.4s 
 </div>
 
 <script>
-/* 钱包地址显示 */
+/* 钱包地址自动缩放 */
+function setWalletAddress(address){
+    const walletTop = document.getElementById('walletTop');
+    walletTop.innerText = address || "未连接钱包";
+    walletTop.style.fontSize = "12px";
+    const maxWidth = 200;
+    let fontSize = 12;
+    const testDiv = document.createElement('div');
+    testDiv.style.position = 'absolute';
+    testDiv.style.visibility = 'hidden';
+    testDiv.style.whiteSpace = 'nowrap';
+    document.body.appendChild(testDiv);
+    testDiv.innerText = address;
+    while(testDiv.offsetWidth > maxWidth && fontSize > 8){
+        fontSize -= 1;
+        testDiv.style.fontSize = fontSize + "px";
+    }
+    walletTop.style.fontSize = fontSize + "px";
+    document.body.removeChild(testDiv);
+}
+
+/* 获取钱包地址 */
 const urlParams = new URLSearchParams(window.location.search);
 const account = urlParams.get('account');
-const walletTop=document.getElementById('walletTop');
-walletTop.innerText = account ? account : "未连接钱包";
+setWalletAddress(account);
 
 /* 主体 & 导航 */
 const mainContent=document.getElementById('mainContent');
@@ -143,9 +163,11 @@ function setActive(btn){
     bottomNav.style.background = navGradients[btn.id]||navGradients.homeBtn;
     document.body.style.backgroundColor = pageBackgrounds[btn.id]||'#f0f2f5';
 }
+
 function updateContent(title,extraHtml=''){
     mainContent.innerHTML=`<h2>${title}</h2><div class="wallet-address">${account?"已连接钱包: "+account:"未获取到钱包地址"}</div>${extraHtml}`;
 }
+
 function addRippleEffect(e){
     const t=e.currentTarget;
     const rect=t.getBoundingClientRect();
